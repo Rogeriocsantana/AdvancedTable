@@ -1,0 +1,617 @@
+{
+    "dataRoles": [
+        {
+            "displayName": "Linhas",
+            "name": "columns",
+            "kind": "GroupingOrMeasure"
+        },
+        {
+            "displayName": "Campos para formatação",
+            "name": "ruleFields",
+            "kind": "GroupingOrMeasure"
+        }
+    ],
+    "objects": {
+        "general": {
+            "properties": {
+                "filter": { "type": { "filter": true } },
+                "filter1": { "type": { "filter": true } },
+                "filter2": { "type": { "filter": true } },
+                "selectionFilter": { "type": { "filter": true } }
+            }
+        },
+        "table": {
+            "displayName": "Tabela",
+            "properties": {
+                "fontSize": { "type": { "formatting": { "fontSize": true } } },
+                "rowHeight": { "type": { "numeric": true } },
+                "textColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "backgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "valueAlignment": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Automático", "value": "auto" },
+                            { "displayName": "Esquerda", "value": "left" },
+                            { "displayName": "Centro", "value": "center" },
+                            { "displayName": "Direita", "value": "right" }
+                        ]
+                    }
+                },
+                "hoverBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"hoverRadius": { "type": { "numeric": true } }
+                ,"showTotals": { "type": { "bool": true } }
+                ,"totalLabel": { "type": { "text": true } }
+                ,"totalBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"totalTextColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"totalAlignment": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Esquerda", "value": "left" },
+                            { "displayName": "Centro", "value": "center" },
+                            { "displayName": "Direita", "value": "right" }
+                        ]
+                    }
+                }
+                ,"totalFontSize": { "type": { "formatting": { "fontSize": true } } }
+                ,"totalBorderRadius": { "type": { "numeric": true } }
+                ,"totalsMode": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Fixo pelo menu", "value": "fixed" },
+                            { "displayName": "Selecionável no visual", "value": "selectable" }
+                        ]
+                    }
+                }
+                ,"totalMenuBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"totalMenuBorderColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"totalMenuFontSize": { "type": { "formatting": { "fontSize": true } } }
+                ,"totalMenuRadius": { "type": { "numeric": true } }
+                ,"headerBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"headerTextColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"headerBorderColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"headerBorderMode": { "type": { "enumeration": [
+                    { "displayName": "Geral", "value": "all" },
+                    { "displayName": "Por lado", "value": "sides" }
+                ] } }
+                ,"headerBorderWidth": { "type": { "numeric": true } }
+                ,"headerBorderTopWidth": { "type": { "numeric": true } }
+                ,"headerBorderRightWidth": { "type": { "numeric": true } }
+                ,"headerBorderBottomWidth": { "type": { "numeric": true } }
+                ,"headerBorderLeftWidth": { "type": { "numeric": true } }
+                ,"headerBorderRadius": { "type": { "numeric": true } }
+                ,"headerFontSize": { "type": { "formatting": { "fontSize": true } } }
+                ,"headerFontFamily": { "type": { "formatting": { "fontFamily": true } } }
+                ,"headerAlignment": { "type": { "enumeration": [
+                    { "displayName": "Esquerda", "value": "left" },
+                    { "displayName": "Centro", "value": "center" },
+                    { "displayName": "Direita", "value": "right" }
+                ] } }
+                ,"headerHeight": { "type": { "numeric": true } }
+                ,"headerHorizontalPadding": { "type": { "numeric": true } }
+                ,"selectionShowCheckboxes": { "type": { "bool": true } }
+                ,"selectionShowSelectAll": { "type": { "bool": true } }
+                ,"selectionBehavior": { "type": { "enumeration": [
+                    { "displayName": "Seleção padrão", "value": "selection" },
+                    { "displayName": "Filtrar relatório", "value": "filter" }
+                ] } }
+                ,"selectionSelectionMode": { "type": { "enumeration": [
+                    { "displayName": "Única", "value": "single" },
+                    { "displayName": "Múltipla", "value": "multiple" }
+                ] } }
+                ,"selectionIndicatorStyle": { "type": { "enumeration": [
+                    { "displayName": "Checkbox", "value": "checkbox" },
+                    { "displayName": "Círculo", "value": "radio" },
+                    { "displayName": "Quadrado", "value": "square" }
+                ] } }
+                ,"selectionIndicatorSize": { "type": { "numeric": true } }
+                ,"selectionColumnWidth": { "type": { "numeric": true } }
+                ,"selectionHorizontalAlignment": { "type": { "enumeration": [
+                    { "displayName": "Esquerda", "value": "left" },
+                    { "displayName": "Centro", "value": "center" },
+                    { "displayName": "Direita", "value": "right" }
+                ] } }
+                ,"selectionBorderMode": { "type": { "enumeration": [
+                    { "displayName": "Completa", "value": "full" },
+                    { "displayName": "Somente lateral", "value": "left" }
+                ] } }
+                ,"selectionBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"selectionTextColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"selectionBorderColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"selectionBorderWidth": { "type": { "numeric": true } }
+                ,"selectionBorderRadius": { "type": { "numeric": true } }
+                ,"selectionDimUnselected": { "type": { "bool": true } }
+                ,"selectionUnselectedOpacity": { "type": { "numeric": true } }
+                ,"filterBarBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"filterBarTextColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"filterBarChipBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"filterBarBorderColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"filterBarTopBorderWidth": { "type": { "numeric": true } }
+                ,"filterBarBottomSpacing": { "type": { "numeric": true } }
+                ,"filterBarFontSize": { "type": { "formatting": { "fontSize": true } } }
+                ,"filterBarHeight": { "type": { "numeric": true } }
+                ,"filterBarHorizontalPadding": { "type": { "numeric": true } }
+                ,"filterBarBorderRadius": { "type": { "numeric": true } }
+                ,"paginationEnabled": { "type": { "bool": true } }
+                ,"paginationPageSize": { "type": { "numeric": true } }
+                ,"paginationPosition": { "type": { "enumeration": [
+                    { "displayName": "Acima da tabela", "value": "top" },
+                    { "displayName": "Abaixo da tabela", "value": "bottom" }
+                ] } }
+                ,"paginationShowPageNumbers": { "type": { "bool": true } }
+                ,"paginationShowRange": { "type": { "bool": true } }
+                ,"paginationPreserveSelection": { "type": { "bool": true } }
+                ,"paginationSelectAllScope": { "type": { "enumeration": [
+                    { "displayName": "Somente página atual", "value": "page" },
+                    { "displayName": "Todos os resultados filtrados", "value": "filtered" }
+                ] } }
+                ,"paginationBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"paginationTextColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"paginationActiveBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"paginationActiveTextColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"paginationBorderColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"paginationFontSize": { "type": { "formatting": { "fontSize": true } } }
+                ,"paginationButtonSize": { "type": { "numeric": true } }
+                ,"paginationSpacing": { "type": { "numeric": true } }
+                ,"paginationHorizontalPadding": { "type": { "numeric": true } }
+                ,"paginationBorderRadius": { "type": { "numeric": true } }
+            }
+        },
+        "titleBar": {
+            "displayName": "Título interno e pesquisa",
+            "properties": {
+                "showTitle": { "type": { "bool": true } },
+                "titleText": { "type": { "text": true } },
+                "titleFontSize": { "type": { "formatting": { "fontSize": true } } },
+                "titleColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "showSubtitle": { "type": { "bool": true } },
+                "subtitleText": { "type": { "text": true } },
+                "subtitleFontSize": { "type": { "formatting": { "fontSize": true } } },
+                "subtitleColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "backgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "height": { "type": { "numeric": true } },
+                "showRecordCount": { "type": { "bool": true } },
+                "recordCountTextColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "recordCountBackground": { "type": { "fill": { "solid": { "color": true } } } },
+                "recordCountFontSize": { "type": { "formatting": { "fontSize": true } } },
+                "recordCountRadius": { "type": { "numeric": true } },
+                "recordCountHeight": { "type": { "numeric": true } },
+                "recordCountWidth": { "type": { "numeric": true } },
+                "recordCountHorizontalPadding": { "type": { "numeric": true } },
+                "recordCountAlignment": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Esquerda", "value": "left" },
+                            { "displayName": "Centro", "value": "center" },
+                            { "displayName": "Direita", "value": "right" }
+                        ]
+                    }
+                }
+            }
+        },
+        "search": {
+            "displayName": "Pesquisa",
+            "properties": {
+                "showSearch": { "type": { "bool": true } },
+                "placeholder": { "type": { "text": true } },
+                "field1": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Primeira coluna", "value": "" }
+                        ]
+                    }
+                },
+                "showSecondSearch": { "type": { "bool": true } },
+                "placeholder2": { "type": { "text": true } },
+                "field2": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Segunda coluna", "value": "" }
+                        ]
+                    }
+                },
+                "mode": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Somente tabela", "value": "local" },
+                            { "displayName": "Aplicar ao relatório", "value": "report" }
+                        ]
+                    }
+                },
+                "position": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Esquerda", "value": "left" },
+                            { "displayName": "Centro", "value": "center" },
+                            { "displayName": "Direita", "value": "right" }
+                        ]
+                    }
+                },
+                "width": { "type": { "numeric": true } },
+                "showIcon": { "type": { "bool": true } },
+                "iconSize": { "type": { "numeric": true } },
+                "iconColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "actionIconSize": { "type": { "numeric": true } },
+                "arrowIconColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "clearIconColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "horizontalMargin": { "type": { "numeric": true } },
+                "backgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "borderColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "borderWidth": { "type": { "numeric": true } },
+                "borderRadius": { "type": { "numeric": true } },
+                "inputHeight": { "type": { "numeric": true } }
+                ,"fontSize": { "type": { "formatting": { "fontSize": true } } }
+            }
+        },
+        "download": {
+            "displayName": "Download",
+            "properties": {
+                "enabled": { "type": { "bool": true } },
+                "buttonText": { "type": { "text": true } },
+                "fileName": { "type": { "text": true } },
+                "defaultFormat": { "type": { "enumeration": [
+                    { "displayName": "Excel (.xlsx)", "value": "xlsx" },
+                    { "displayName": "CSV", "value": "csv" }
+                ] } },
+                "defaultScope": { "type": { "enumeration": [
+                    { "displayName": "Resultados filtrados", "value": "filtered" },
+                    { "displayName": "Todos os registros", "value": "all" },
+                    { "displayName": "Página atual", "value": "page" },
+                    { "displayName": "Somente selecionados", "value": "selected" }
+                ] } },
+                "method": { "type": { "enumeration": [
+                    { "displayName": "GitHub Pages (padrão)", "value": "github" },
+                    { "displayName": "Servidor próprio", "value": "custom" }
+                ] } },
+                "bridgeUrl": { "type": { "text": true } },
+                "githubUrl": { "type": { "text": true } },
+                "customUrl": { "type": { "text": true } },
+                "showMenu": { "type": { "bool": true } },
+                "position": { "type": { "enumeration": [
+                    { "displayName": "Antes da pesquisa", "value": "before" },
+                    { "displayName": "Depois da pesquisa", "value": "after" }
+                ] } },
+                "spacing": { "type": { "numeric": true } },
+                "showText": { "type": { "bool": true } },
+                "iconSize": { "type": { "numeric": true } },
+                "fontSize": { "type": { "formatting": { "fontSize": true } } },
+                "width": { "type": { "numeric": true } },
+                "height": { "type": { "numeric": true } },
+                "backgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "textColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "borderColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "borderWidth": { "type": { "numeric": true } },
+                "borderRadius": { "type": { "numeric": true } },
+                "menuBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "menuTextColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "formatBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "formatSelectedColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "formatSelectedTextColor": { "type": { "fill": { "solid": { "color": true } } } }
+            }
+        },
+        "ruleEditor": {
+            "displayName": "Editor de regras",
+            "properties": {
+                "rulesJson": { "type": { "text": true } },
+                "iconsJson": { "type": { "text": true } },
+                "iconPreferencesJson": { "type": { "text": true } }
+            }
+        },
+        "header": {
+            "displayName": "Cabeçalho",
+            "properties": {
+                "backgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "textColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "borderColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "borderMode": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Geral", "value": "all" },
+                            { "displayName": "Por lado", "value": "sides" }
+                        ]
+                    }
+                },
+                "borderWidth": { "type": { "numeric": true } },
+                "borderTopWidth": { "type": { "numeric": true } },
+                "borderRightWidth": { "type": { "numeric": true } },
+                "borderBottomWidth": { "type": { "numeric": true } },
+                "borderLeftWidth": { "type": { "numeric": true } },
+                "borderRadius": { "type": { "numeric": true } },
+                "fontSize": { "type": { "formatting": { "fontSize": true } } },
+                "fontFamily": { "type": { "formatting": { "fontFamily": true } } },
+                "alignment": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Esquerda", "value": "left" },
+                            { "displayName": "Centro", "value": "center" },
+                            { "displayName": "Direita", "value": "right" }
+                        ]
+                    }
+                },
+                "height": { "type": { "numeric": true } },
+                "horizontalPadding": { "type": { "numeric": true } }
+            }
+        },
+        "selection": {
+            "displayName": "Seleção",
+            "properties": {
+                "showCheckboxes": { "type": { "bool": true } },
+                "showSelectAll": { "type": { "bool": true } },
+                "behavior": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Seleção padrão", "value": "selection" },
+                            { "displayName": "Filtrar relatório", "value": "filter" }
+                        ]
+                    }
+                },
+                "selectionMode": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Única", "value": "single" },
+                            { "displayName": "Múltipla", "value": "multiple" }
+                        ]
+                    }
+                },
+                "indicatorStyle": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Checkbox", "value": "checkbox" },
+                            { "displayName": "Círculo", "value": "radio" },
+                            { "displayName": "Quadrado", "value": "square" }
+                        ]
+                    }
+                },
+                "indicatorSize": { "type": { "numeric": true } },
+                "columnWidth": { "type": { "numeric": true } },
+                "horizontalAlignment": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Esquerda", "value": "left" },
+                            { "displayName": "Centro", "value": "center" },
+                            { "displayName": "Direita", "value": "right" }
+                        ]
+                    }
+                },
+                "borderMode": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Completa", "value": "full" },
+                            { "displayName": "Somente lateral", "value": "left" }
+                        ]
+                    }
+                },
+                "backgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "textColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "borderColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "borderWidth": { "type": { "numeric": true } }
+                ,"borderRadius": { "type": { "numeric": true } }
+                ,"dimUnselected": { "type": { "bool": true } }
+                ,"unselectedOpacity": { "type": { "numeric": true } }
+            }
+        },
+        "columnStyle": {
+            "displayName": "Coluna específica",
+            "properties": {
+                "selectedColumn": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Primeira coluna", "value": "" }
+                        ]
+                    }
+                },
+                "cellMode": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Valor", "value": "value" },
+                            { "displayName": "Etiqueta", "value": "pill" },
+                            { "displayName": "Barra e valor", "value": "bar" }
+                        ]
+                    }
+                },
+                "textColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "columnOrder": { "type": { "numeric": true } },
+                "totalAggregation": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Nenhum", "value": "none" },
+                            { "displayName": "Contagem", "value": "count" },
+                            { "displayName": "Valores únicos", "value": "unique" },
+                            { "displayName": "Soma", "value": "sum" },
+                            { "displayName": "Média", "value": "average" },
+                            { "displayName": "Máximo", "value": "max" },
+                            { "displayName": "Mínimo", "value": "min" }
+                        ]
+                    }
+                },
+                "showColumnTotal": { "type": { "bool": true } },
+                "totalAlignment": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Automático", "value": "auto" },
+                            { "displayName": "Esquerda", "value": "left" },
+                            { "displayName": "Centro", "value": "center" },
+                            { "displayName": "Direita", "value": "right" }
+                        ]
+                    }
+                },
+                "totalFontSize": { "type": { "formatting": { "fontSize": true } } },
+                "backgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "alignment": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Automático", "value": "auto" },
+                            { "displayName": "Esquerda", "value": "left" },
+                            { "displayName": "Centro", "value": "center" },
+                            { "displayName": "Direita", "value": "right" }
+                        ]
+                    }
+                },
+                "iconStyle": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Status", "value": "status" },
+                            { "displayName": "Categoria", "value": "category" },
+                            { "displayName": "Círculo", "value": "circle" },
+                            { "displayName": "Losango", "value": "diamond" }
+                        ]
+                    }
+                },
+                "iconColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"cellPadding": { "type": { "numeric": true } }
+                ,"headerPadding": { "type": { "numeric": true } }
+                ,"headerFontSize": { "type": { "formatting": { "fontSize": true } } }
+                ,"headerTextColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"headerBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"headerAlignment": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Automático", "value": "auto" },
+                            { "displayName": "Esquerda", "value": "left" },
+                            { "displayName": "Centro", "value": "center" },
+                            { "displayName": "Direita", "value": "right" }
+                        ]
+                    }
+                }
+                ,"pillRadius": { "type": { "numeric": true } }
+                ,"pillRandomColors": { "type": { "bool": true } }
+                ,"pillPositiveNegative": { "type": { "bool": true } }
+                ,"pillNegativeColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"pillPositiveColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"pillTextFollowsBackground": { "type": { "bool": true } }
+                ,"pillColorMode": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Automática por texto", "value": "random" },
+                            { "displayName": "Valor cadastrado", "value": "value" },
+                            { "displayName": "Função", "value": "function" }
+                        ]
+                    }
+                }
+                ,"pillFunctionColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"pillValue1": { "type": { "text": true } }
+                ,"pillColor1": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"pillValue2": { "type": { "text": true } }
+                ,"pillColor2": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"pillValue3": { "type": { "text": true } }
+                ,"pillColor3": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"pillValue4": { "type": { "text": true } }
+                ,"pillColor4": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"pillTextColor1": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"pillTextColor2": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"pillTextColor3": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"pillTextColor4": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"barMinimum": { "type": { "numeric": true } }
+                ,"barMaximum": { "type": { "numeric": true } }
+                ,"barThreshold": { "type": { "numeric": true } }
+                ,"barLowColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"barHighColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"barTrackColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"barWidth": { "type": { "numeric": true } }
+                ,"barHeight": { "type": { "numeric": true } }
+                ,"svgBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"svgTextColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"svgBorderColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"svgRadius": { "type": { "numeric": true } }
+            }
+        },
+        "cellElements": {
+            "displayName": "Elementos da célula",
+            "properties": {
+                "selectedSeries": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Primeira coluna", "value": "" }
+                        ]
+                    }
+                },
+                "backgroundEnabled": { "type": { "bool": true } },
+                "backgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "fontEnabled": { "type": { "bool": true } },
+                "fontColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "iconsEnabled": { "type": { "bool": true } },
+                "iconColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "iconStyle": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Status", "value": "status" },
+                            { "displayName": "Categoria", "value": "category" },
+                            { "displayName": "Círculo", "value": "circle" },
+                            { "displayName": "Losango", "value": "diamond" }
+                        ]
+                    }
+                },
+                "iconLayout": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "À esquerda dos dados", "value": "left" },
+                            { "displayName": "Somente ícone", "value": "only" },
+                            { "displayName": "À direita dos dados", "value": "right" }
+                        ]
+                    }
+                },
+                "iconRuleEnabled": { "type": { "bool": true } },
+                "iconRuleField": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Mesma coluna", "value": "" }
+                        ]
+                    }
+                },
+                "iconThreshold": { "type": { "numeric": true } },
+                "iconBelowStyle": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Status", "value": "status" },
+                            { "displayName": "Círculo", "value": "circle" },
+                            { "displayName": "Losango", "value": "diamond" }
+                        ]
+                    }
+                },
+                "iconBelowColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "iconAboveStyle": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Status", "value": "status" },
+                            { "displayName": "Círculo", "value": "circle" },
+                            { "displayName": "Losango", "value": "diamond" }
+                        ]
+                    }
+                },
+                "iconAboveColor": { "type": { "fill": { "solid": { "color": true } } }
+                }
+            }
+        }
+    },
+    "dataViewMappings": [
+        {
+            "table": {
+                "rows": {
+                    "select": [
+                        { "for": { "in": "columns" } },
+                        { "for": { "in": "ruleFields" } }
+                    ],
+                    "dataReductionAlgorithm": {
+                        "top": { "count": 30000 }
+                    }
+                }
+            }
+        }
+    ],
+    "sorting": { "custom": {} },
+    "tooltips": {
+        "supportedTypes": {
+            "default": true,
+            "canvas": true
+        },
+        "supportEnhancedTooltips": true
+    },
+    "privileges": [
+        {
+            "name": "WebAccess",
+            "essential": false,
+            "parameters": [
+                "https://*.github.io"
+            ]
+        }
+    ]
+}

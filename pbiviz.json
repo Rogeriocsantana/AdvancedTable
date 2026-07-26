@@ -1,0 +1,26 @@
+{
+  "visual": {
+    "name": "advancedTableRoger",
+    "displayName": "AdvanceTable",
+    "guid": "advancedTableRogerC40D05D8D12144689810E97FF8C695C8",
+    "visualClassName": "Visual",
+    "version": "0.5.11.0",
+    "description": "Tabela moderna transparente para Power BI com filtros, formatação condicional, pesquisas e tooltips de página.",
+    "supportUrl": "https://github.com/Rogeriocsantana/AdvancedTable",
+    "gitHubUrl": "https://github.com/Rogeriocsantana/AdvancedTable"
+  },
+  "apiVersion": "5.11.0",
+  "author": {
+    "name": "Roger",
+    "email": "roger@example.com"
+  },
+  "assets": {
+    "icon": "assets/icon.png"
+  },
+  "externalJS": null,
+  "style": "style/visual.less",
+  "capabilities": "capabilities.json",
+  "dependencies": null,
+  "stringResources": [],
+  "version": "0.5.11.0"
+}

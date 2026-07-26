@@ -1,0 +1,44 @@
+# Dependências
+/node_modules/
+
+# Arquivos temporários do Power BI Visuals Tools
+/.tmp/
+/webpack.statistics.*.html
+*.log
+
+# Certificados e segredos locais
+*.pfx
+*.p12
+*.pem
+*.key
+.env
+.env.*
+
+# Sistema operacional e editores
+.DS_Store
+Thumbs.db
+Desktop.ini
+/.vscode/*
+!/.vscode/settings.json
+!/.vscode/launch.json
+!/.vscode/tasks.json
+
+# Resultados auxiliares da verificação de planilhas
+/outputs/**/*.inspect.ndjson
+
+# Builds e caches da página ponte
+/download-bridge/node_modules/
+/download-bridge/.npm-cache/
+/download-bridge/.next/
+/download-bridge/.vinext/
+/download-bridge/.package-stage-*/
+/download-bridge/dist/
+/download-bridge/out/
+/download-bridge/coverage/
+/download-bridge/.wrangler/
+/download-bridge/.vercel/
+/download-bridge/outputs/
+/download-bridge/work/
+
+# O pacote final em /dist e os arquivos .xlsx de demonstração
+# são mantidos no repositório intencionalmente.

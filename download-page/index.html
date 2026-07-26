@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AdvanceTable Download</title>
+  <style>
+    *{box-sizing:border-box}html,body{min-height:100%;margin:0}body{display:grid;padding:24px;color:#182230;background:#eef5fd;font-family:"Segoe UI",Arial,sans-serif;place-items:center}
+    main{width:min(100%,460px);padding:32px;text-align:center;background:#fff;border:1px solid #dceaf8;border-radius:20px;box-shadow:0 22px 60px rgba(31,78,121,.16)}
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:30px;color:#344054;font-weight:700}.icon{display:grid;width:34px;height:34px;color:#fff;background:#1683f3;border-radius:9px;place-items:center}
+    .status{display:grid;width:64px;height:64px;margin:0 auto 18px;color:#fff;background:#1683f3;border-radius:50%;font-size:30px;font-weight:700;place-items:center}
+    h1{margin:0 0 10px;font-size:30px}p{color:#667085;line-height:1.55}.file{display:flex;justify-content:space-between;gap:16px;padding:14px 16px;margin:24px 0 14px;text-align:left;background:#f7faff;border:1px solid #e1ecf8;border-radius:10px}
+    a{display:block;padding:13px 18px;color:#fff;background:#1683f3;border-radius:10px;font-weight:700;text-decoration:none}.privacy{font-size:13px}.error{color:#912018;background:#fff1f0}.hidden{display:none}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand"><span class="icon">⇩</span><span>AdvanceTable</span></div>
+    <div id="status" class="status">…</div>
+    <h1 id="title">Preparando seu arquivo</h1>
+    <p id="message">O download será iniciado automaticamente.</p>
+    <div id="file" class="file hidden"><strong id="name"></strong><span id="size"></span></div>
+    <a id="download" class="hidden">Baixar arquivo</a>
+    <p id="privacy" class="privacy hidden">O arquivo foi reconstruído somente neste navegador e não foi armazenado.</p>
+  </main>
+  <script>
+    (() => {
+      const params = new URLSearchParams(location.hash.slice(1));
+      const data = params.get("d");
+      const name = params.get("n") || "AdvanceTable.xlsx";
+      const mime = params.get("t") || "application/octet-stream";
+      const error = (message) => {
+        document.querySelector("#status").textContent = "!";
+        document.querySelector("#status").classList.add("error");
+        document.querySelector("#title").textContent = "Não foi possível preparar o arquivo";
+        document.querySelector("#message").textContent = message;
+      };
+      if (!data) {
+        error("Nenhum arquivo foi recebido. Abra esta página pelo botão do AdvanceTable.");
+        return;
+      }
+      try {
+        const base64 = data.replace(/-/g, "+").replace(/_/g, "/");
+        const binary = atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, "="));
+        const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+        const url = URL.createObjectURL(new Blob([bytes], { type: mime }));
+        const size = bytes.length < 1048576
+          ? `${(bytes.length / 1024).toFixed(1)} KB`
+          : `${(bytes.length / 1048576).toFixed(1)} MB`;
+        const link = document.querySelector("#download");
+        link.href = url;
+        link.download = name;
+        document.querySelector("#status").textContent = "✓";
+        document.querySelector("#title").textContent = "Arquivo pronto";
+        document.querySelector("#message").textContent = "O download foi preparado.";
+        document.querySelector("#name").textContent = name;
+        document.querySelector("#size").textContent = size;
+        document.querySelector("#file").classList.remove("hidden");
+        document.querySelector("#download").classList.remove("hidden");
+        document.querySelector("#privacy").classList.remove("hidden");
+        history.replaceState(null, "", location.pathname);
+        link.click();
+      } catch {
+        error("O arquivo recebido está incompleto ou excedeu o limite do endereço.");
+      }
+    })();
+  </script>
+</body>
+</html>

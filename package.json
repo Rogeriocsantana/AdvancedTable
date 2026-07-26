@@ -1,0 +1,33 @@
+{
+  "name": "advance-table",
+  "description": "default_template_value",
+  "version": "0.5.11",
+  "repository": {
+    "type": "default_template_value",
+    "url": "default_template_value"
+  },
+  "license": "MIT",
+  "scripts": {
+    "pbiviz": "pbiviz",
+    "start": "pbiviz start",
+    "package": "pbiviz package && node scripts/rename-package.mjs",
+    "lint": "npx eslint ."
+  },
+  "dependencies": {
+    "@types/d3": "7.4.3",
+    "d3": "7.9.0",
+    "jszip": "3.10.1",
+    "powerbi-models": "^2.1.1",
+    "powerbi-visuals-api": "5.11.1",
+    "powerbi-visuals-utils-dataviewutils": "^6.1.0",
+    "powerbi-visuals-utils-formattingmodel": "6.0.4",
+    "powerbi-visuals-utils-formattingutils": "^6.1.2"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.8.0",
+    "eslint": "^9.11.1",
+    "eslint-plugin-powerbi-visuals": "^1.0.0",
+    "powerbi-visuals-tools": "^7.2.0",
+    "typescript": "5.5.4"
+  }
+}
