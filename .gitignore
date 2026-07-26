@@ -1,5 +1,5 @@
-# Dependências
-/node_modules/
+# Dependências (em qualquer pasta do projeto)
+**/node_modules/
 
 # Arquivos temporários do Power BI Visuals Tools
 /.tmp/
