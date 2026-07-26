@@ -1,101 +1,155 @@
 # AdvanceTable
 
-Visual customizado para Power BI que amplia a experiência da tabela nativa com pesquisa, filtros por coluna, seleção, paginação, totais, formatação avançada e exportação.
+Visual de tabela avançada para Power BI, criado para oferecer mais controle sobre navegação, pesquisa, filtros, seleção, formatação condicional, totais e exportação de dados.
 
-O nome exibido no Power BI é **AdvanceTable**. Os pacotes compilados são publicados em `dist` com o nome **AdvancedTable**.
+O nome exibido no Power BI é **AdvanceTable**. Os pacotes distribuídos utilizam o nome **AdvancedTable**.
 
-> Versão atual: `0.4.8`  
+> Versão atual: `0.5.11`  
 > API de visuais do Power BI: `5.11`
 
-## Principais recursos
+## Recursos
 
-### Dados, navegação e interação
+### Tabela e navegação
 
-- múltiplos campos e medidas, respeitando a ordem definida no painel de campos;
-- ordenação pelas colunas;
-- paginação configurável, acima ou abaixo da tabela;
-- quantidade de registros por página e indicador de intervalo;
-- menu de contexto nativo do Power BI;
-- tooltip padrão e suporte a página de tooltip;
-- estados de hover e destaque visual de linhas e colunas.
+- exibição de campos e medidas na ordem definida no painel de dados;
+- ordenação por coluna;
+- paginação configurável acima ou abaixo da tabela;
+- escolha da quantidade de registros por página;
+- indicador do intervalo e da quantidade de registros;
+- menu de contexto do Power BI;
+- tooltip padrão e suporte a páginas de tooltip;
+- hover, destaque e seleção de linhas.
 
 ### Pesquisa e filtros
 
-- uma ou duas caixas de pesquisa configuráveis;
-- pesquisa somente no visual ou aplicada ao relatório;
-- escolha da coluna pesquisada;
-- filtros individuais no cabeçalho de cada coluna;
-- seleção de valores, pesquisa dentro do filtro e limpeza dos filtros ativos;
-- barra opcional com os filtros aplicados.
+- uma ou duas caixas de pesquisa;
+- escolha dos campos utilizados em cada pesquisa;
+- pesquisa apenas no visual ou aplicada como filtro no relatório;
+- filtros individuais nos cabeçalhos;
+- pesquisa e seleção de valores dentro do filtro;
+- limpeza individual dos filtros;
+- barra opcional mostrando os filtros ativos.
 
 ### Seleção
 
 - seleção única ou múltipla;
 - seleção por clique ou por controles visuais;
-- estilos de checkbox, círculo ou quadrado;
-- modo de seleção padrão do Power BI;
-- modo que aplica a seleção como filtro no relatório;
-- opção para selecionar todos os registros visíveis.
+- indicadores em formato de checkbox, círculo ou quadrado;
+- seleção padrão do Power BI ou aplicação como filtro no relatório;
+- seleção de todos os registros da página ou de todos os resultados filtrados;
+- preservação opcional da seleção durante a paginação.
 
 ### Formatação
 
-- cores, fontes, tamanhos, alinhamentos, espaçamentos e bordas;
-- configurações globais e substituições por coluna;
-- título, subtítulo e contador de registros;
-- cabeçalho e linhas com aparência configurável;
+- tamanho do texto, altura das linhas, alinhamento e espaçamento;
+- cores globais de texto e fundo;
+- formatação específica por coluna, com prioridade sobre a configuração global;
+- personalização de cabeçalhos, bordas, títulos e subtítulos;
+- contador de registros;
 - larguras e alinhamentos específicos por coluna;
-- etiquetas para valores categóricos;
-- ícones e marcadores de status;
-- barras de progresso para valores numéricos;
-- editor próprio de regras aberto pelo botão `ƒx`;
-- regras ilimitadas por coluna com operadores de texto, número e percentual;
-- exibição como valor, etiqueta, barra ou ícone;
-- regras baseadas na própria coluna ou em outro campo carregado no visual;
-- área **Campos auxiliares de regra** para medidas usadas somente na formatação;
-- preenchimento por valor do campo, positivo/negativo ou regras personalizadas;
-- biblioteca com mais de 30 ícones e posicionamento antes, depois ou sem texto;
-- formatação numérica e de texto compatível com os metadados do Power BI.
+- cores de hover e seleção.
+
+### Formatação condicional avançada
+
+O editor próprio de formatação condicional é aberto pelo botão de função exibido no modo de edição do Power BI Desktop.
+
+- regras independentes por coluna;
+- modos **Etiqueta**, **Barra** e **Ícone**;
+- regras automáticas, positivas e negativas, personalizadas ou baseadas no valor de um campo;
+- operadores de igualdade, diferença, maior, menor, intervalos, números e percentuais;
+- regras baseadas na própria coluna ou em outro campo;
+- campos e medidas auxiliares usados somente nas regras;
+- preview em tempo real e simulador de valores;
+- opção para remover ou restaurar a formatação de uma coluna.
+
+#### Etiquetas
+
+- marcador opcional antes do texto;
+- formatos de marcador como círculo, quadrado, losango e triângulo;
+- fundo configurável por regra;
+- texto acompanhando a cor do fundo ou respeitando a cor da coluna/tabela.
+
+#### Barras
+
+- barra ao lado do valor ou preenchimento proporcional da célula;
+- barra antes, depois ou sem exibir o valor;
+- mínimo, máximo, cor da barra e cor do trilho configuráveis;
+- regras personalizadas ou baseadas em campos e medidas.
+
+#### Ícones
+
+- biblioteca de ícones nativos;
+- ícone antes, depois ou no lugar do texto;
+- tamanhos pequeno, médio e grande;
+- cor fixa ou dinâmica, quando o ícone permitir;
+- busca, visualização compacta ou expandida e reordenação;
+- ocultação e restauração de ícones nativos;
+- importação de ícones personalizados em PNG e SVG;
+- gerenciamento da biblioteca, lixeira e proteção de ícones em uso.
 
 ### Totais e agregações
 
-- linha de totais opcional;
-- agregação fixa ou selecionável diretamente no visual;
+- linha de total opcional;
+- cálculo fixo ou selecionável diretamente no visual;
 - contagem, valores únicos, soma, média, máximo e mínimo;
-- configuração de agregação e alinhamento por coluna;
-- personalização visual da linha e do menu de totais.
+- agregação e alinhamento configuráveis por coluna;
+- personalização da linha e do menu de totais.
 
 ### Download
 
 - exportação em Excel (`.xlsx`) e CSV;
-- escopos: resultados filtrados, todos os registros, página atual ou selecionados;
-- GitHub Pages como método padrão;
+- escopos de resultados filtrados, todos os registros, página atual ou selecionados;
+- uso da API oficial do Power BI, quando permitida pelo administrador;
+- download por página externa como alternativa;
+- GitHub Pages como opção padrão;
 - servidor HTTPS próprio como alternativa;
-- formato padrão e aparência do menu configuráveis.
+- endereço editável sem necessidade de recompilar o visual.
 
-No Power BI Service, o download utiliza uma página ponte para reconstruir o arquivo no navegador. Ao selecionar **GitHub Pages**, aparece um campo próprio, preenchido com `https://rogeriocsantana.github.io/AdvancedTable/download-page/`, que pode ser substituído por qualquer endereço `https://*.github.io` sem recompilação. Ao selecionar **Servidor próprio**, aparece outro campo, vazio e independente, para uma URL HTTPS cujo domínio tenha sido incluído em `WebAccess`.
+O endereço padrão da página de download é:
+
+```text
+https://rogeriocsantana.github.io/AdvancedTable/download-page/
+```
+
+Quem utilizar outro GitHub Pages pode substituir esse endereço nas configurações do visual. A opção **Servidor próprio** possui um endereço separado e orientações próprias.
+
+No primeiro uso de uma página externa, o Power BI pode solicitar autorização para abrir o endereço.
 
 ## Capturas de tela
 
-As imagens reais devem ser capturadas no Power BI Desktop ou Service, usando um relatório de demonstração sem informações confidenciais. A estrutura sugerida está em [`docs/images`](docs/images/README.md).
+As capturas de tela serão adicionadas posteriormente, utilizando um relatório demonstrativo sem dados reais.
 
-Quando as capturas estiverem disponíveis, esta seção pode apresentar:
+## Instalação
 
-1. visão geral da tabela;
-2. pesquisa e filtros por coluna;
-3. seleção de registros;
-4. etiquetas, ícones e barras;
-5. totais e agregações;
-6. menu de download.
+1. Baixe o arquivo `.pbiviz` mais recente na pasta [`dist`](dist) ou na área de releases do repositório.
+2. Abra o relatório no Power BI Desktop.
+3. No painel **Visualizações**, selecione **Obter mais visuais**.
+4. Escolha **Importar um visual de um arquivo**.
+5. Selecione `AdvancedTable.<versão>.pbiviz`.
+6. Adicione o visual à página e arraste campos ou medidas para **Linhas**.
 
-## Instalação no Power BI
+Para atualizar uma instalação existente, importe o pacote mais recente sobre a versão anterior. O GUID interno é preservado para que o Power BI reconheça a atualização como sendo do mesmo visual.
 
-1. Baixe o arquivo `.pbiviz` mais recente da pasta `dist` ou da área de releases do repositório.
-2. No Power BI Desktop, abra o painel **Visualizações**.
-3. Selecione **Obter mais visuais** e depois **Importar um visual de um arquivo**.
-4. Escolha o pacote `AdvancedTable.<versão>.pbiviz`.
-5. Adicione o visual à página e arraste colunas ou medidas para **Linhas**.
+## Download no Power BI Service
 
-Para atualizar uma instalação existente, importe a versão mais recente sobre a anterior. O GUID histórico do visual é mantido para preservar essa compatibilidade.
+A pasta [`download-page`](download-page) contém a página estática preparada para publicação no GitHub Pages.
+
+Para usar a página padrão:
+
+1. publique o conteúdo do repositório no GitHub Pages;
+2. no visual, abra **Download > Comportamento**;
+3. selecione **GitHub Pages**;
+4. confirme ou altere o endereço apresentado;
+5. autorize o acesso externo quando o Power BI solicitar.
+
+Para usar outro servidor:
+
+1. selecione **Servidor próprio**;
+2. informe uma URL HTTPS;
+3. inclua o domínio em `WebAccess`, no arquivo `capabilities.json`;
+4. gere um novo pacote do visual.
+
+O arquivo é enviado no fragmento (`#`) da URL, que não é encaminhado ao servidor HTTP. Existe um limite preventivo de 1.000.000 de caracteres para evitar URLs excessivamente grandes.
 
 ## Desenvolvimento
 
@@ -105,23 +159,23 @@ Para atualizar uma instalação existente, importe a versão mais recente sobre 
 - npm;
 - Power BI Visuals Tools, instalado pelas dependências do projeto.
 
-### Preparação
+### Instalar dependências
 
 ```powershell
 npm.cmd install
 ```
 
-### Servidor de desenvolvimento
+### Executar em modo de desenvolvimento
 
 ```powershell
 npm.cmd start
 ```
 
-### Verificações
+### Validar o projeto
 
 ```powershell
-npm.cmd run lint
 npx.cmd tsc --noEmit
+npm.cmd run lint
 ```
 
 ### Gerar o pacote
@@ -130,60 +184,53 @@ npx.cmd tsc --noEmit
 npm.cmd run package
 ```
 
-O comando executa o empacotador oficial e renomeia automaticamente o resultado para:
+O pacote será criado no formato:
 
 ```text
 dist/AdvancedTable.<versão>.pbiviz
 ```
 
-O identificador interno e o GUID continuam com os valores históricos. Somente o nome do arquivo entregue em `dist` é padronizado como `AdvancedTable`.
-
 ## Estrutura do projeto
 
 ```text
 AdvancedTable/
-├── assets/                 ícone do visual
-├── dist/                   pacotes .pbiviz compilados
-├── docs/images/            capturas usadas na documentação
-├── download-bridge/        projeto-fonte da página ponte
-├── download-page/          página estática para GitHub Pages
-├── scripts/                automações de empacotamento
+├── assets/             Ícone e recursos do visual
+├── dist/               Pacotes compilados
+├── docs/               Documentação e futuras imagens
+├── download-bridge/    Projeto-fonte da página ponte
+├── download-page/      Página estática para GitHub Pages
+├── scripts/            Scripts de empacotamento
 ├── src/
-│   ├── data/               leitura e tipos dos dados
-│   ├── rendering/          construção e interação da tabela
-│   ├── utils/              formatação e exportação
-│   ├── settings.ts         modelo de configurações
-│   └── visual.ts           integração com o host do Power BI
-├── style/                  estilos LESS
-├── capabilities.json       campos, formatação e permissões
-├── package.json            scripts e dependências
-└── pbiviz.json             identidade e versão do visual
+│   ├── data/           Leitura, transformação e tipos dos dados
+│   ├── rendering/      Renderização e interações da tabela
+│   ├── rules/          Editor e mecanismo de regras
+│   ├── utils/          Formatação e exportação
+│   ├── settings.ts     Modelo do painel de formatação
+│   └── visual.ts       Integração com o Power BI
+├── style/              Estilos LESS
+├── capabilities.json   Campos, propriedades e permissões
+├── package.json        Scripts e dependências
+└── pbiviz.json         Identidade e versão do visual
 ```
-
-## Página de download para o Power BI Service
-
-A pasta [`download-page`](download-page/README.md) contém uma página estática que pode ser publicada no GitHub Pages. Depois da publicação:
-
-1. publique o repositório no GitHub Pages;
-2. mantenha `https://*.github.io` autorizado em `WebAccess`;
-3. selecione **GitHub Pages (padrão)** em **Download > Comportamento**;
-4. altere **Endereço da página de download** se utilizar outro GitHub Pages;
-5. autorize o acesso externo quando o Power BI solicitar.
-
-Para utilizar outro servidor, selecione **Servidor próprio**, informe sua URL HTTPS, adicione o domínio em `WebAccess` no `capabilities.json` e gere um novo pacote.
-
-O conteúdo do arquivo é enviado no fragmento (`#`) da URL, que não é encaminhado ao servidor HTTP. Há um limite preventivo de 1.000.000 de caracteres para evitar URLs excessivamente grandes.
 
 ## Identidade e compatibilidade
 
-O projeto foi renomeado de `AdvancedTableRoger` para `AdvancedTable`, mas mantém o GUID:
+O projeto foi renomeado de `AdvancedTableRoger` para `AdvancedTable`, mas preserva o GUID histórico:
 
 ```text
 advancedTableRogerC40D05D8D12144689810E97FF8C695C8
 ```
 
-Não altere esse valor em novas versões. A troca do GUID faria o Power BI tratar o pacote como outro visual e impediria a atualização direta das instalações existentes.
+Esse valor não deve ser alterado. Um GUID diferente faria o Power BI tratar o pacote como um novo visual, impedindo a atualização direta das instalações existentes.
+
+## Segurança e privacidade
+
+- o visual processa os dados recebidos pelo Power BI;
+- a página externa de download recebe o arquivo pelo fragmento da URL;
+- o fragmento não é enviado ao servidor HTTP;
+- não publique relatórios, planilhas ou capturas contendo informações confidenciais;
+- revise as políticas da organização antes de habilitar exportações.
 
 ## Licença
 
-MIT, conforme definido no `package.json`.
+Distribuído sob a licença MIT, conforme definido no arquivo [`package.json`](package.json).
