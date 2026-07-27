@@ -4,7 +4,7 @@ Visual de tabela avançada para Power BI, criado para oferecer mais controle sob
 
 O nome exibido no Power BI é **AdvanceTable**. Os pacotes distribuídos utilizam o nome **AdvancedTable**.
 
-> Versão atual: `0.5.21`  
+> Versão atual: `0.5.22`  
 > API de visuais do Power BI: `5.11`
 
 ## Recursos
@@ -114,7 +114,9 @@ O editor próprio de formatação condicional é aberto pelo botão de função 
 - exportação em Excel (`.xlsx`) e CSV;
 - escopos de resultados filtrados, todos os registros, página atual ou selecionados;
 - menu de formato e escopo exibido acima das demais camadas do visual;
-- download por página externa, evitando a restrição da API oficial pelo tenant;
+- API oficial de download do Power BI para tenants que autorizam o recurso;
+- orientação automática para usar uma alternativa quando a API estiver bloqueada;
+- download por página externa como alternativa à API oficial;
 - GitHub Pages como opção padrão;
 - servidor HTTPS próprio como alternativa;
 - endereço editável sem necessidade de recompilar o visual.
@@ -128,6 +130,21 @@ https://rogeriocsantana.github.io/AdvancedTable/download-page/
 Quem utilizar outro GitHub Pages pode substituir esse endereço nas configurações do visual. A opção **Servidor próprio** possui um endereço separado e orientações próprias.
 
 No primeiro uso de uma página externa, o Power BI pode solicitar autorização para abrir o endereço.
+
+### API oficial do Power BI
+
+A opção **API oficial do Power BI** salva o arquivo diretamente pelo serviço de download do visual. Ela exige consentimento do usuário e que o administrador habilite, no portal de administração do Fabric:
+
+```text
+Configurações do tenant > Visuais do Power BI >
+Permitir downloads de visuais personalizados
+```
+
+Essa permissão é específica para downloads iniciados por visuais personalizados e é independente das restrições gerais de exportação e compartilhamento do tenant.
+
+Quando a API estiver desabilitada pelo administrador, o AdvanceTable informa o bloqueio e orienta o usuário a selecionar **GitHub Pages** ou **Servidor próprio**. O método padrão do visual continua sendo **GitHub Pages**, pois funciona sem depender dessa liberação administrativa.
+
+A API oficial é compatível com Power BI Desktop e Power BI Service e possui limite de 30 MB por arquivo.
 
 ## Capturas de tela
 

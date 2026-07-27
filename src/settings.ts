@@ -582,7 +582,7 @@ class DownloadCardSettings extends FormattingSettingsCompositeCard {
     method = new formattingSettings.AutoDropdown({
         name: "method",
         displayName: "Método de download",
-        description: "Antes do primeiro download, autorize o visual a acessar o GitHub Pages quando o Power BI solicitar.",
+        description: "GitHub Pages é o padrão. A API oficial depende da permissão do administrador do tenant.",
         value: "github"
     });
     bridgeUrl = new formattingSettings.TextInput({
@@ -743,12 +743,16 @@ class DownloadCardSettings extends FormattingSettingsCompositeCard {
             }
         });
         const useCustomServer = this.method.value === "custom";
+        const useOfficialApi = this.method.value === "official";
         this.bridgeUrl.visible = false;
-        this.githubUrl.visible = this.enabled.value && !useCustomServer;
+        this.githubUrl.visible =
+            this.enabled.value && !useCustomServer && !useOfficialApi;
         this.customUrl.visible = this.enabled.value && useCustomServer;
-        this.method.description = useCustomServer
-            ? "Servidor próprio exige HTTPS e autorização do domínio em WebAccess antes do empacotamento."
-            : "GitHub Pages aceita qualquer endereço https://*.github.io sem recompilar o visual.";
+        this.method.description = useOfficialApi
+            ? "A API oficial exige que o administrador habilite Permitir downloads de visuais personalizados no portal do Fabric."
+            : useCustomServer
+                ? "Servidor próprio exige HTTPS e autorização do domínio em WebAccess antes do empacotamento."
+                : "GitHub Pages é o padrão e aceita qualquer endereço https://*.github.io sem recompilar o visual.";
     }
 }
 

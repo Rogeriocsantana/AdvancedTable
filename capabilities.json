@@ -260,6 +260,7 @@
                 ] } },
                 "method": { "type": { "enumeration": [
                     { "displayName": "GitHub Pages (padrão)", "value": "github" },
+                    { "displayName": "API oficial do Power BI", "value": "official" },
                     { "displayName": "Servidor próprio", "value": "custom" }
                 ] } },
                 "bridgeUrl": { "type": { "text": true } },
@@ -663,6 +664,10 @@
             "parameters": [
                 "https://*.github.io"
             ]
+        },
+        {
+            "name": "ExportContent",
+            "essential": false
         }
     ]
 }

@@ -27,6 +27,7 @@ import {
 
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
 import ITooltipService = powerbi.extensibility.ITooltipService;
+import IDownloadService = powerbi.extensibility.IDownloadService;
 import IVisual = powerbi.extensibility.visual.IVisual;
 import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
@@ -66,6 +67,7 @@ export class Visual implements IVisual {
     private readonly events: IVisualEventService;
     private readonly selectionManager: ISelectionManager;
     private readonly tooltipService: ITooltipService;
+    private readonly downloadService: IDownloadService;
     private readonly renderer: TableRenderer;
     private readonly formattingService = new FormattingSettingsService();
     private formattingSettings = new VisualFormattingSettingsModel();
@@ -93,6 +95,7 @@ export class Visual implements IVisual {
         this.events = options.host.eventService;
         this.selectionManager = options.host.createSelectionManager();
         this.tooltipService = options.host.tooltipService;
+        this.downloadService = options.host.downloadService;
         this.renderer = new TableRenderer(options.element);
         this.renderer.setCallbacks({
             onSearch: (index, value) => this.applySearchInput(index, value),
@@ -685,7 +688,7 @@ export class Visual implements IVisual {
             schemaVersion: 1,
             visualGuid:
                 "advancedTableRogerC40D05D8D12144689810E97FF8C695C8",
-            visualVersion: "0.5.21.0",
+            visualVersion: "0.5.22.0",
             exportedAt: new Date().toISOString(),
             objects,
             columns: metadata.columns
@@ -1568,7 +1571,60 @@ export class Visual implements IVisual {
             .replace(/[<>:"/\\|?*]/g, "_")
             .replace(/\.(xlsx|csv)$/i, "")
             .trim() || "AdvanceTable";
+        const method = String(this.formattingSettings.download.method.value);
+        if (method === "official") {
+            await this.downloadThroughOfficialApi(format, baseName, rows);
+            return;
+        }
         await this.downloadThroughBrowser(format, baseName, rows);
+    }
+
+    private async downloadThroughOfficialApi(
+        format: string,
+        baseName: string,
+        rows: TableRow[]
+    ): Promise<void> {
+        if (!this.model) return;
+        try {
+            const status = await this.downloadService.exportStatus();
+            if (status !== powerbi.PrivilegeStatus.Allowed) {
+                this.renderer.showDownloadNotice(
+                    "A API oficial está bloqueada neste tenant. Em Download > Comportamento, use GitHub Pages ou peça ao administrador para habilitar downloads de visuais personalizados."
+                );
+                return;
+            }
+            let content: string;
+            let fileName: string;
+            let fileType: string;
+            if (format === "csv") {
+                content = createCsv(this.model.columns, rows);
+                fileName = `${baseName}.csv`;
+                fileType = "text/csv";
+            } else {
+                content = await createXlsxBase64(
+                    this.model.columns,
+                    rows,
+                    this.formattingSettings.titleBar.titleText.value || "Dados"
+                );
+                fileName = `${baseName}.xlsx`;
+                fileType = "base64";
+            }
+            const result = await this.downloadService.exportVisualsContentExtended(
+                content,
+                fileName,
+                fileType,
+                "Arquivo exportado pelo visual AdvanceTable"
+            );
+            if (!result.downloadCompleted) {
+                this.renderer.showDownloadNotice(
+                    "O Power BI não concluiu o download. Tente novamente ou selecione GitHub Pages."
+                );
+            }
+        } catch {
+            this.renderer.showDownloadNotice(
+                "A API oficial não está disponível. Selecione GitHub Pages ou servidor próprio em Download > Comportamento."
+            );
+        }
     }
 
     private async downloadThroughBrowser(
