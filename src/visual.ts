@@ -692,7 +692,7 @@ export class Visual implements IVisual {
             schemaVersion: 1,
             visualGuid:
                 "advancedTableRogerC40D05D8D12144689810E97FF8C695C8",
-            visualVersion: "0.5.25.0",
+            visualVersion: "0.5.26.0",
             exportedAt: new Date().toISOString(),
             objects,
             columns: metadata.columns

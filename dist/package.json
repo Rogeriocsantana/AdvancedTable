@@ -1,5 +1,5 @@
 {
-		"version": "0.5.25.0",
+		"version": "0.5.26.0",
 		"author": {"name":"Roger","email":"roger@example.com"},
 		"resources": [
 			{
@@ -8,7 +8,7 @@
 				"file": "resources/advancedTableRogerC40D05D8D12144689810E97FF8C695C8.pbiviz.json"
 			}
 		],
-		"visual": {"name":"advancedTableRoger","displayName":"AdvanceTable","guid":"advancedTableRogerC40D05D8D12144689810E97FF8C695C8","visualClassName":"Visual","version":"0.5.25.0","description":"Tabela moderna transparente para Power BI com filtros, formatação condicional, pesquisas e tooltips de página.","supportUrl":"https://github.com/Rogeriocsantana/AdvancedTable","gitHubUrl":"https://github.com/Rogeriocsantana/AdvancedTable"},
+		"visual": {"name":"advancedTableRoger","displayName":"AdvanceTable","guid":"advancedTableRogerC40D05D8D12144689810E97FF8C695C8","visualClassName":"Visual","version":"0.5.26.0","description":"Tabela moderna transparente para Power BI com filtros, formatação condicional, pesquisas e tooltips de página.","supportUrl":"https://github.com/Rogeriocsantana/AdvancedTable","gitHubUrl":"https://github.com/Rogeriocsantana/AdvancedTable"},
 		"metadata": {
 			"pbivizjson": {
 				"resourceId": "rId0"

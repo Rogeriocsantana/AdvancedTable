@@ -1338,7 +1338,45 @@ export class TableRenderer {
             list,
             actions
         );
-        header.appendChild(menu);
+        this.root.appendChild(menu);
+
+        const rootRect = this.root.getBoundingClientRect();
+        const headerRect = header.getBoundingClientRect();
+        const menuRect = menu.getBoundingClientRect();
+        const edgeSpacing = 4;
+        const menuGap = 2;
+        const availableAbove = headerRect.top - rootRect.top - menuGap;
+        const availableBelow = rootRect.bottom - headerRect.bottom - menuGap;
+        const openUpward =
+            menuRect.height > availableBelow && availableAbove > availableBelow;
+        const desiredTop = openUpward
+            ? headerRect.top - rootRect.top - menuRect.height - menuGap
+            : headerRect.bottom - rootRect.top + menuGap;
+        const maxTop = Math.max(
+            edgeSpacing,
+            rootRect.height - menuRect.height - edgeSpacing
+        );
+        const desiredLeft =
+            headerRect.right - rootRect.left - menuRect.width;
+        const maxLeft = Math.max(
+            edgeSpacing,
+            rootRect.width - menuRect.width - edgeSpacing
+        );
+
+        menu.classList.toggle("is-open-upward", openUpward);
+        menu.style.top = `${Math.min(
+            Math.max(edgeSpacing, desiredTop),
+            maxTop
+        )}px`;
+        menu.style.left = `${Math.min(
+            Math.max(edgeSpacing, desiredLeft),
+            maxLeft
+        )}px`;
+        menu.style.right = "auto";
+        menu.style.maxHeight = `${Math.max(
+            120,
+            rootRect.height - edgeSpacing * 2
+        )}px`;
     }
 
     private renderTotals(
