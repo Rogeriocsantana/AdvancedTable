@@ -266,11 +266,6 @@
                 "githubUrl": { "type": { "text": true } },
                 "customUrl": { "type": { "text": true } },
                 "showMenu": { "type": { "bool": true } },
-                "position": { "type": { "enumeration": [
-                    { "displayName": "Antes da pesquisa", "value": "before" },
-                    { "displayName": "Depois da pesquisa", "value": "after" }
-                ] } },
-                "spacing": { "type": { "numeric": true } },
                 "showText": { "type": { "bool": true } },
                 "iconSize": { "type": { "numeric": true } },
                 "fontSize": { "type": { "formatting": { "fontSize": true } } },
@@ -286,6 +281,60 @@
                 "formatBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
                 "formatSelectedColor": { "type": { "fill": { "solid": { "color": true } } } },
                 "formatSelectedTextColor": { "type": { "fill": { "solid": { "color": true } } } }
+            }
+        },
+        "topLayout": {
+            "displayName": "Organizador superior",
+            "properties": {
+                "mode": { "type": { "enumeration": [
+                    { "displayName": "Manual", "value": "manual" },
+                    { "displayName": "Automático", "value": "automatic" }
+                ] } },
+                "titleRow": { "type": { "enumeration": [
+                    { "displayName": "Linha 1", "value": "1" },
+                    { "displayName": "Linha 2", "value": "2" }
+                ] } },
+                "titlePosition": { "type": { "numeric": true } },
+                "titleAutomaticAlignment": { "type": { "enumeration": [
+                    { "displayName": "Esquerda", "value": "left" },
+                    { "displayName": "Centro", "value": "center" },
+                    { "displayName": "Direita", "value": "right" }
+                ] } },
+                "titleAutomaticSpacing": { "type": { "numeric": true } },
+                "searchRow": { "type": { "enumeration": [
+                    { "displayName": "Linha 1", "value": "1" },
+                    { "displayName": "Linha 2", "value": "2" }
+                ] } },
+                "searchPosition": { "type": { "numeric": true } },
+                "searchAutomaticAlignment": { "type": { "enumeration": [
+                    { "displayName": "Esquerda", "value": "left" },
+                    { "displayName": "Centro", "value": "center" },
+                    { "displayName": "Direita", "value": "right" }
+                ] } },
+                "searchAutomaticSpacing": { "type": { "numeric": true } },
+                "downloadRow": { "type": { "enumeration": [
+                    { "displayName": "Linha 1", "value": "1" },
+                    { "displayName": "Linha 2", "value": "2" }
+                ] } },
+                "downloadPosition": { "type": { "numeric": true } },
+                "downloadAutomaticAlignment": { "type": { "enumeration": [
+                    { "displayName": "Esquerda", "value": "left" },
+                    { "displayName": "Centro", "value": "center" },
+                    { "displayName": "Direita", "value": "right" }
+                ] } },
+                "downloadAutomaticSpacing": { "type": { "numeric": true } },
+                "paginationRow": { "type": { "enumeration": [
+                    { "displayName": "Linha 1", "value": "1" },
+                    { "displayName": "Linha 2", "value": "2" }
+                ] } },
+                "paginationPosition": { "type": { "numeric": true } },
+                "paginationAutomaticAlignment": { "type": { "enumeration": [
+                    { "displayName": "Esquerda", "value": "left" },
+                    { "displayName": "Centro", "value": "center" },
+                    { "displayName": "Direita", "value": "right" }
+                ] } },
+                "paginationAutomaticSpacing": { "type": { "numeric": true } },
+                "rowGap": { "type": { "numeric": true } }
             }
         },
         "ruleEditor": {
@@ -436,6 +485,8 @@
                 },
                 "totalFontSize": { "type": { "formatting": { "fontSize": true } } },
                 "backgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "allowWidthReduction": { "type": { "bool": true } },
+                "reducedWidth": { "type": { "numeric": true } },
                 "alignment": {
                     "type": {
                         "enumeration": [

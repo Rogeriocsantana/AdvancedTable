@@ -11,13 +11,13 @@ class TableBaseSettings extends FormattingSettingsCompositeCard {
     fontSize = new formattingSettings.NumUpDown({
         name: "fontSize",
         displayName: "Tamanho do texto",
-        value: 12
+        value: 16
     });
 
     rowHeight = new formattingSettings.NumUpDown({
         name: "rowHeight",
         displayName: "Altura da linha",
-        value: 36
+        value: 40
     });
 
     textColor = new formattingSettings.ColorPicker({
@@ -35,7 +35,7 @@ class TableBaseSettings extends FormattingSettingsCompositeCard {
     valueAlignment = new formattingSettings.AlignmentGroup({
         name: "valueAlignment",
         displayName: "Alinhamento global dos valores",
-        value: "auto",
+        value: "left",
         mode: powerbi.visuals.AlignmentGroupMode.Horizonal,
         supportsNoSelection: true
     });
@@ -43,13 +43,13 @@ class TableBaseSettings extends FormattingSettingsCompositeCard {
     hoverBackgroundColor = new formattingSettings.ColorPicker({
         name: "hoverBackgroundColor",
         displayName: "Cor de fundo ao passar o mouse",
-        value: { value: "#F6F6F6" }
+        value: { value: "#E8F1FB" }
     });
 
     hoverRadius = new formattingSettings.NumUpDown({
         name: "hoverRadius",
         displayName: "Arredondamento do hover",
-        value: 0
+        value: 10
     });
 
     showTotals = new formattingSettings.ToggleSwitch({
@@ -207,14 +207,14 @@ class TitleBarCardSettings extends FormattingSettingsCompositeCard {
     titleText = new formattingSettings.TextInput({
         name: "titleText",
         displayName: "Texto do título",
-        value: "Tabela",
+        value: "Atendimento em detalhes",
         placeholder: "Título"
     });
 
     titleFontSize = new formattingSettings.NumUpDown({
         name: "titleFontSize",
         displayName: "Tamanho do título",
-        value: 14
+        value: 30
     });
 
     titleColor = new formattingSettings.ColorPicker({
@@ -257,13 +257,13 @@ class TitleBarCardSettings extends FormattingSettingsCompositeCard {
     height = new formattingSettings.NumUpDown({
         name: "height",
         displayName: "Altura da barra",
-        value: 48
+        value: 70
     });
 
     showRecordCount = new formattingSettings.ToggleSwitch({
         name: "showRecordCount",
         displayName: "Mostrar quantidade de registros",
-        value: false
+        value: true
     });
 
     recordCountTextColor = new formattingSettings.ColorPicker({
@@ -281,7 +281,7 @@ class TitleBarCardSettings extends FormattingSettingsCompositeCard {
     recordCountFontSize = new formattingSettings.NumUpDown({
         name: "recordCountFontSize",
         displayName: "Tamanho do contador",
-        value: 10
+        value: 24
     });
 
     recordCountRadius = new formattingSettings.NumUpDown({
@@ -293,7 +293,7 @@ class TitleBarCardSettings extends FormattingSettingsCompositeCard {
     recordCountHeight = new formattingSettings.NumUpDown({
         name: "recordCountHeight",
         displayName: "Altura do contador",
-        value: 22
+        value: 40
     });
 
     recordCountWidth = new formattingSettings.NumUpDown({
@@ -305,7 +305,7 @@ class TitleBarCardSettings extends FormattingSettingsCompositeCard {
     recordCountHorizontalPadding = new formattingSettings.NumUpDown({
         name: "recordCountHorizontalPadding",
         displayName: "Espaçamento lateral do contador",
-        value: 10
+        value: 14
     });
 
     recordCountAlignment = new formattingSettings.AutoDropdown({
@@ -363,7 +363,7 @@ class SearchCardSettings extends FormattingSettingsCompositeCard {
     placeholder = new formattingSettings.TextInput({
         name: "placeholder",
         displayName: "Texto da pesquisa",
-        value: "Pesquisar...",
+        value: "Pacientes",
         placeholder: "Pesquisar..."
     });
 
@@ -397,7 +397,7 @@ class SearchCardSettings extends FormattingSettingsCompositeCard {
     mode = new formattingSettings.AutoDropdown({
         name: "mode",
         displayName: "Comportamento",
-        value: "local"
+        value: "report"
     });
 
     position = new formattingSettings.AutoDropdown({
@@ -409,7 +409,7 @@ class SearchCardSettings extends FormattingSettingsCompositeCard {
     width = new formattingSettings.NumUpDown({
         name: "width",
         displayName: "Largura total das pesquisas",
-        value: 260
+        value: 900
     });
 
     showIcon = new formattingSettings.ToggleSwitch({
@@ -421,7 +421,7 @@ class SearchCardSettings extends FormattingSettingsCompositeCard {
     iconSize = new formattingSettings.NumUpDown({
         name: "iconSize",
         displayName: "Tamanho do ícone",
-        value: 17
+        value: 36
     });
 
     iconColor = new formattingSettings.ColorPicker({
@@ -433,7 +433,7 @@ class SearchCardSettings extends FormattingSettingsCompositeCard {
     actionIconSize = new formattingSettings.NumUpDown({
         name: "actionIconSize",
         displayName: "Tamanho da seta e do X",
-        value: 16
+        value: 36
     });
 
     arrowIconColor = new formattingSettings.ColorPicker({
@@ -451,7 +451,7 @@ class SearchCardSettings extends FormattingSettingsCompositeCard {
     horizontalMargin = new formattingSettings.NumUpDown({
         name: "horizontalMargin",
         displayName: "Deslocamento lateral",
-        value: 0
+        value: 140
     });
 
     backgroundColor = new formattingSettings.ColorPicker({
@@ -475,18 +475,18 @@ class SearchCardSettings extends FormattingSettingsCompositeCard {
     borderRadius = new formattingSettings.NumUpDown({
         name: "borderRadius",
         displayName: "Arredondamento",
-        value: 6
+        value: 10
     });
     inputHeight = new formattingSettings.NumUpDown({
         name: "inputHeight",
         displayName: "Altura da pesquisa",
-        value: 32
+        value: 50
     });
 
     fontSize = new formattingSettings.NumUpDown({
         name: "fontSize",
         displayName: "Tamanho do texto",
-        value: 12
+        value: 24
     });
 
     name = "search";
@@ -610,25 +610,15 @@ class DownloadCardSettings extends FormattingSettingsCompositeCard {
         displayName: "Mostrar menu ao clicar",
         value: true
     });
-    position = new formattingSettings.AutoDropdown({
-        name: "position",
-        displayName: "Posição",
-        value: "after"
-    });
-    spacing = new formattingSettings.NumUpDown({
-        name: "spacing",
-        displayName: "Espaçamento da pesquisa",
-        value: 8
-    });
     showText = new formattingSettings.ToggleSwitch({
         name: "showText",
         displayName: "Mostrar texto",
-        value: true
+        value: false
     });
     iconSize = new formattingSettings.NumUpDown({
         name: "iconSize",
         displayName: "Tamanho do ícone",
-        value: 16
+        value: 24
     });
     fontSize = new formattingSettings.NumUpDown({
         name: "fontSize",
@@ -643,17 +633,17 @@ class DownloadCardSettings extends FormattingSettingsCompositeCard {
     height = new formattingSettings.NumUpDown({
         name: "height",
         displayName: "Altura",
-        value: 32
+        value: 50
     });
     backgroundColor = new formattingSettings.ColorPicker({
         name: "backgroundColor",
         displayName: "Cor de fundo",
-        value: { value: "#FFFFFF" }
+        value: { value: "#118DFF" }
     });
     textColor = new formattingSettings.ColorPicker({
         name: "textColor",
         displayName: "Cor do texto e ícone",
-        value: { value: "#323130" }
+        value: { value: "#FFFFFF" }
     });
     borderColor = new formattingSettings.ColorPicker({
         name: "borderColor",
@@ -711,9 +701,7 @@ class DownloadCardSettings extends FormattingSettingsCompositeCard {
                 this.method,
                 this.githubUrl,
                 this.customUrl,
-                this.showMenu,
-                this.position,
-                this.spacing
+                this.showMenu
             ]
         }),
         new FormattingSettingsGroup({
@@ -768,7 +756,7 @@ class HeaderCardSettings extends FormattingSettingsCompositeCard {
     backgroundColor = new formattingSettings.ColorPicker({
         name: "backgroundColor",
         displayName: "Cor de fundo",
-        value: { value: "#F5F5F5" }
+        value: { value: "#E8F1FB" }
     });
 
     textColor = new formattingSettings.ColorPicker({
@@ -780,19 +768,19 @@ class HeaderCardSettings extends FormattingSettingsCompositeCard {
     borderColor = new formattingSettings.ColorPicker({
         name: "borderColor",
         displayName: "Cor da borda",
-        value: { value: "#D8D8D8" }
+        value: { value: "#E8F1FB" }
     });
 
     borderMode = new formattingSettings.AutoDropdown({
         name: "borderMode",
         displayName: "Configuração da borda",
-        value: "all"
+        value: "sides"
     });
 
     borderWidth = new formattingSettings.NumUpDown({
         name: "borderWidth",
         displayName: "Espessura geral",
-        value: 1
+        value: 2
     });
 
     borderTopWidth = new formattingSettings.NumUpDown({
@@ -810,7 +798,7 @@ class HeaderCardSettings extends FormattingSettingsCompositeCard {
     borderBottomWidth = new formattingSettings.NumUpDown({
         name: "borderBottomWidth",
         displayName: "Borda inferior",
-        value: 1
+        value: 2
     });
 
     borderLeftWidth = new formattingSettings.NumUpDown({
@@ -822,13 +810,13 @@ class HeaderCardSettings extends FormattingSettingsCompositeCard {
     borderRadius = new formattingSettings.NumUpDown({
         name: "borderRadius",
         displayName: "Arredondamento dos cantos",
-        value: 0
+        value: 10
     });
 
     fontSize = new formattingSettings.NumUpDown({
         name: "fontSize",
         displayName: "Tamanho do texto",
-        value: 12
+        value: 18
     });
 
     fontFamily = new formattingSettings.FontPicker({
@@ -847,13 +835,13 @@ class HeaderCardSettings extends FormattingSettingsCompositeCard {
     height = new formattingSettings.NumUpDown({
         name: "height",
         displayName: "Altura",
-        value: 36
+        value: 50
     });
 
     horizontalPadding = new formattingSettings.NumUpDown({
         name: "horizontalPadding",
         displayName: "Espaçamento lateral",
-        value: 12
+        value: 10
     });
 
     name = "header";
@@ -911,19 +899,19 @@ class SelectionCardSettings extends FormattingSettingsCompositeCard {
     showCheckboxes = new formattingSettings.ToggleSwitch({
         name: "showCheckboxes",
         displayName: "Mostrar coluna de seleção",
-        value: false
+        value: true
     });
 
     showSelectAll = new formattingSettings.ToggleSwitch({
         name: "showSelectAll",
         displayName: "Mostrar selecionar todos",
-        value: false
+        value: true
     });
 
     behavior = new formattingSettings.AutoDropdown({
         name: "behavior",
         displayName: "Comportamento",
-        value: "selection"
+        value: "filter"
     });
 
     selectionMode = new formattingSettings.AutoDropdown({
@@ -941,7 +929,7 @@ class SelectionCardSettings extends FormattingSettingsCompositeCard {
     indicatorSize = new formattingSettings.NumUpDown({
         name: "indicatorSize",
         displayName: "Tamanho do marcador",
-        value: 15
+        value: 18
     });
 
     columnWidth = new formattingSettings.NumUpDown({
@@ -990,19 +978,19 @@ class SelectionCardSettings extends FormattingSettingsCompositeCard {
     borderRadius = new formattingSettings.NumUpDown({
         name: "borderRadius",
         displayName: "Arredondamento da seleção",
-        value: 0
+        value: 3
     });
 
     dimUnselected = new formattingSettings.ToggleSwitch({
         name: "dimUnselected",
         displayName: "Reduzir opacidade das outras linhas",
-        value: false
+        value: true
     });
 
     unselectedOpacity = new formattingSettings.NumUpDown({
         name: "unselectedOpacity",
         displayName: "Opacidade das outras linhas (%)",
-        value: 25
+        value: 50
     });
 
     name = "selection";
@@ -1068,7 +1056,7 @@ class FilterBarCardSettings extends FormattingSettingsCompositeCard {
     borderColor = new formattingSettings.ColorPicker({
         name: "borderColor",
         displayName: "Cor da borda",
-        value: { value: "#C9DAF8" }
+        value: { value: "#FFFFFF" }
     });
     topBorderWidth = new formattingSettings.NumUpDown({
         name: "topBorderWidth",
@@ -1083,12 +1071,12 @@ class FilterBarCardSettings extends FormattingSettingsCompositeCard {
     fontSize = new formattingSettings.NumUpDown({
         name: "fontSize",
         displayName: "Tamanho do texto",
-        value: 10
+        value: 13
     });
     height = new formattingSettings.NumUpDown({
         name: "height",
         displayName: "Altura mínima",
-        value: 34
+        value: 32
     });
     horizontalPadding = new formattingSettings.NumUpDown({
         name: "horizontalPadding",
@@ -1128,17 +1116,17 @@ class PaginationCardSettings extends FormattingSettingsCompositeCard {
     enabled = new formattingSettings.ToggleSwitch({
         name: "enabled",
         displayName: "Ativar paginação",
-        value: false
+        value: true
     });
     pageSize = new formattingSettings.NumUpDown({
         name: "pageSize",
         displayName: "Registros por página",
-        value: 10
+        value: 4
     });
     position = new formattingSettings.AutoDropdown({
         name: "position",
         displayName: "Posição",
-        value: "bottom"
+        value: "top"
     });
     showPageNumbers = new formattingSettings.ToggleSwitch({
         name: "showPageNumbers",
@@ -1158,7 +1146,7 @@ class PaginationCardSettings extends FormattingSettingsCompositeCard {
     selectAllScope = new formattingSettings.AutoDropdown({
         name: "selectAllScope",
         displayName: "Selecionar todos",
-        value: "page"
+        value: "filtered"
     });
     backgroundColor = new formattingSettings.ColorPicker({
         name: "backgroundColor",
@@ -1188,22 +1176,22 @@ class PaginationCardSettings extends FormattingSettingsCompositeCard {
     fontSize = new formattingSettings.NumUpDown({
         name: "fontSize",
         displayName: "Tamanho do texto",
-        value: 10
+        value: 14
     });
     buttonSize = new formattingSettings.NumUpDown({
         name: "buttonSize",
         displayName: "Tamanho dos botões",
-        value: 28
+        value: 30
     });
     spacing = new formattingSettings.NumUpDown({
         name: "spacing",
         displayName: "Espaçamento",
-        value: 4
+        value: 8
     });
     horizontalPadding = new formattingSettings.NumUpDown({
         name: "horizontalPadding",
         displayName: "Espaçamento lateral",
-        value: 8
+        value: 0
     });
     borderRadius = new formattingSettings.NumUpDown({
         name: "borderRadius",
@@ -1252,6 +1240,153 @@ class PaginationCardSettings extends FormattingSettingsCompositeCard {
             if (slice !== this.enabled) {
                 slice.visible = this.enabled.value;
             }
+        });
+    }
+}
+
+class TopLayoutCardSettings extends FormattingSettingsCompositeCard {
+    mode = new formattingSettings.AutoDropdown({
+        name: "mode",
+        displayName: "Modo de posicionamento",
+        value: "manual"
+    });
+    private createRow(name: string, displayName: string, value: string) {
+        return new formattingSettings.AutoDropdown({ name, displayName, value });
+    }
+    private createAutomaticAlignment(name: string, value: string) {
+        return new formattingSettings.AutoDropdown({
+            name,
+            displayName: "Posição automática",
+            value
+        });
+    }
+    private createAutomaticSpacing(name: string) {
+        return new formattingSettings.NumUpDown({
+            name,
+            displayName: "Ajuste fino automático",
+            description: "Esquerda/direita: 0 a 10 para dentro. Centro: -5 a 5.",
+            value: 0
+        });
+    }
+    private createManualPosition(name: string, value: number) {
+        return new formattingSettings.NumUpDown({
+            name,
+            displayName: "Posição manual (0 a 100)",
+            description: "Usa o tamanho próprio do componente. 0 encosta à esquerda e 100 à direita.",
+            value
+        });
+    }
+
+    titleRow = this.createRow("titleRow", "Linha", "1");
+    titlePosition = this.createManualPosition("titlePosition", 0);
+    titleAutomaticAlignment =
+        this.createAutomaticAlignment("titleAutomaticAlignment", "left");
+    titleAutomaticSpacing =
+        this.createAutomaticSpacing("titleAutomaticSpacing");
+
+    searchRow = this.createRow("searchRow", "Linha", "1");
+    searchPosition = this.createManualPosition("searchPosition", 50);
+    searchAutomaticAlignment =
+        this.createAutomaticAlignment("searchAutomaticAlignment", "center");
+    searchAutomaticSpacing =
+        this.createAutomaticSpacing("searchAutomaticSpacing");
+
+    downloadRow = this.createRow("downloadRow", "Linha", "1");
+    downloadPosition = this.createManualPosition("downloadPosition", 100);
+    downloadAutomaticAlignment =
+        this.createAutomaticAlignment("downloadAutomaticAlignment", "right");
+    downloadAutomaticSpacing =
+        this.createAutomaticSpacing("downloadAutomaticSpacing");
+
+    paginationRow = this.createRow("paginationRow", "Linha", "2");
+    paginationPosition = this.createManualPosition("paginationPosition", 100);
+    paginationAutomaticAlignment =
+        this.createAutomaticAlignment("paginationAutomaticAlignment", "right");
+    paginationAutomaticSpacing =
+        this.createAutomaticSpacing("paginationAutomaticSpacing");
+
+    rowGap = new formattingSettings.NumUpDown({
+        name: "rowGap",
+        displayName: "Espaço entre as linhas",
+        value: 4
+    });
+
+    name = "topLayout";
+    displayName = "Organizador superior";
+    groups = [
+        new FormattingSettingsGroup({
+            name: "topLayoutGeneral",
+            displayName: "Linhas",
+            collapsible: true,
+            slices: [this.mode, this.rowGap]
+        }),
+        new FormattingSettingsGroup({
+            name: "topLayoutTitle",
+            displayName: "Título e contador",
+            collapsible: true,
+            slices: [
+                this.titleRow,
+                this.titlePosition,
+                this.titleAutomaticAlignment,
+                this.titleAutomaticSpacing
+            ]
+        }),
+        new FormattingSettingsGroup({
+            name: "topLayoutSearch",
+            displayName: "Pesquisa",
+            collapsible: true,
+            slices: [
+                this.searchRow,
+                this.searchPosition,
+                this.searchAutomaticAlignment,
+                this.searchAutomaticSpacing
+            ]
+        }),
+        new FormattingSettingsGroup({
+            name: "topLayoutDownload",
+            displayName: "Download",
+            collapsible: true,
+            slices: [
+                this.downloadRow,
+                this.downloadPosition,
+                this.downloadAutomaticAlignment,
+                this.downloadAutomaticSpacing
+            ]
+        }),
+        new FormattingSettingsGroup({
+            name: "topLayoutPagination",
+            displayName: "Paginação",
+            collapsible: true,
+            slices: [
+                this.paginationRow,
+                this.paginationPosition,
+                this.paginationAutomaticAlignment,
+                this.paginationAutomaticSpacing
+            ]
+        })
+    ];
+
+    onPreProcess(): void {
+        const manual = String(this.mode.value) === "manual";
+        [
+            this.titlePosition,
+            this.searchPosition,
+            this.downloadPosition,
+            this.paginationPosition
+        ].forEach((slice) => {
+            slice.visible = manual;
+        });
+        [
+            this.titleAutomaticAlignment,
+            this.titleAutomaticSpacing,
+            this.searchAutomaticAlignment,
+            this.searchAutomaticSpacing,
+            this.downloadAutomaticAlignment,
+            this.downloadAutomaticSpacing,
+            this.paginationAutomaticAlignment,
+            this.paginationAutomaticSpacing
+        ].forEach((slice) => {
+            slice.visible = !manual;
         });
     }
 }
@@ -1411,6 +1546,20 @@ class ColumnStyleCardSettings extends FormattingSettingsCompositeCard {
         value: "auto",
         mode: powerbi.visuals.AlignmentGroupMode.Horizonal,
         supportsNoSelection: true
+    });
+
+    allowWidthReduction = new formattingSettings.ToggleSwitch({
+        name: "allowWidthReduction",
+        displayName: "Permitir reduzir largura",
+        description: "Permite cortar o texto desta coluna com reticências para ajudar a evitar a barra horizontal.",
+        value: false
+    });
+
+    reducedWidth = new formattingSettings.NumUpDown({
+        name: "reducedWidth",
+        displayName: "Largura máxima reduzida",
+        description: "Largura máxima, em pixels, quando a redução estiver habilitada.",
+        value: 140
     });
 
     iconStyle = new formattingSettings.AutoDropdown({
@@ -1663,6 +1812,8 @@ class ColumnStyleCardSettings extends FormattingSettingsCompositeCard {
                 this.textColor,
                 this.backgroundColor,
                 this.alignment,
+                this.allowWidthReduction,
+                this.reducedWidth,
                 this.cellPadding
             ]
         }),
@@ -1926,6 +2077,7 @@ export class VisualFormattingSettingsModel extends FormattingSettingsModel {
     titleBar = new TitleBarCardSettings();
     search = new SearchCardSettings();
     download = new DownloadCardSettings();
+    topLayout = new TopLayoutCardSettings();
     columnStyle = new ColumnStyleCardSettings();
     cellElements = new CellElementsCardSettings();
     cards = [
@@ -1933,7 +2085,9 @@ export class VisualFormattingSettingsModel extends FormattingSettingsModel {
         this.titleBar,
         this.search,
         this.download,
+        this.topLayout,
         this.columnStyle,
         this.cellElements
     ];
+
 }

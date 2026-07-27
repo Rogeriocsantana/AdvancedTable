@@ -67,6 +67,15 @@ function parseColumnStyle(
             "backgroundColor",
             fallback?.backgroundColor || "rgba(0,0,0,0)"
         ),
+        allowWidthReduction: objectBoolean(
+            object,
+            "allowWidthReduction",
+            fallback?.allowWidthReduction ?? false
+        ),
+        reducedWidth: Math.max(
+            60,
+            Number(object?.reducedWidth ?? fallback?.reducedWidth ?? 140)
+        ),
         customTextColor:
             hasObjectProperty(object, "textColor") ||
             fallback?.customTextColor ||
@@ -248,6 +257,50 @@ function parseColumnStyle(
     };
 }
 
+function normalizedColumnName(value: string): string {
+    return value
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toLocaleLowerCase("pt-BR");
+}
+
+function applyDefaultColumnProfile(
+    displayName: string,
+    object: powerbi.DataViewObject | undefined,
+    style: ColumnStyle
+): ColumnStyle {
+    const name = normalizedColumnName(displayName);
+    const reducedWidths: Record<string, number> = {
+        paciente: 255,
+        "medico atendimento": 225,
+        "medico protocolo": 195,
+        "classificacao final": 195
+    };
+    const centeredColumns = new Set([
+        "elegivel",
+        "fin",
+        "re-int",
+        "lab",
+        "gaso"
+    ]);
+    const reducedWidth = reducedWidths[name];
+    if (reducedWidth !== undefined &&
+        !hasObjectProperty(object, "allowWidthReduction")) {
+        style.allowWidthReduction = true;
+        style.reducedWidth = reducedWidth;
+    }
+    if ((name === "paciente" || centeredColumns.has(name)) &&
+        !hasObjectProperty(object, "alignment")) {
+        style.alignment = name === "paciente" ? "left" : "center";
+    }
+    if (name === "paciente" &&
+        !hasObjectProperty(object, "headerAlignment")) {
+        style.headerAlignment = "left";
+    }
+    return style;
+}
+
 function findFilterTarget(
     expr: powerbi.data.ISQExpr | undefined,
     queryName: string | undefined
@@ -352,6 +405,11 @@ export function parseTable(
     const toTableColumn = (sourceIndex: number): TableColumn => {
         const column = table.columns[sourceIndex];
         const styleObject = column.objects?.columnStyle;
+        const style = applyDefaultColumnProfile(
+            column.displayName,
+            styleObject,
+            parseColumnStyle(styleObject)
+        );
         return {
             displayName: column.displayName,
             queryName: column.queryName,
@@ -361,7 +419,7 @@ export function parseTable(
             sourceIndex,
             explicitOrder: Number(styleObject?.columnOrder ?? -1),
             filterTarget: findFilterTarget(column.expr, column.queryName),
-            style: parseColumnStyle(styleObject)
+            style
         };
     };
     const columns: TableColumn[] = visibleIndexes.map((sourceIndex) => {

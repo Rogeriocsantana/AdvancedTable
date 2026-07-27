@@ -215,6 +215,7 @@ export class RuleEditor {
     private readonly content: HTMLDivElement;
     private readonly enabledInput: HTMLInputElement;
     private readonly removeFormattingButton: HTMLButtonElement;
+    private readonly configurationFeedback: HTMLSpanElement;
     private model: TableModel | null = null;
     private ruleSets: ColumnRuleSet[] = [];
     private customIcons: CustomIconAsset[] = [];
@@ -233,7 +234,10 @@ export class RuleEditor {
         private readonly onSave: (rules: ColumnRuleSet[]) => void,
         private readonly onSaveIcons: (icons: CustomIconAsset[]) => void,
         private readonly onSaveIconPreferences:
-            (preferences: IconPreferences) => void
+            (preferences: IconPreferences) => void,
+        private readonly onExportConfiguration: () => Promise<string>,
+        private readonly onImportConfiguration:
+            (contents: string) => Promise<string>
     ) {
         this.overlay = document.createElement("div");
         this.overlay.className = "power-table__rule-overlay";
@@ -258,6 +262,77 @@ export class RuleEditor {
 
         const headerActions = document.createElement("div");
         headerActions.className = "power-table__rule-header-actions";
+        const configurationActions = document.createElement("div");
+        configurationActions.className =
+            "power-table__configuration-actions";
+        const exportConfiguration = document.createElement("button");
+        exportConfiguration.type = "button";
+        exportConfiguration.textContent = "Exportar configuração";
+        exportConfiguration.title =
+            "Baixar todas as configurações do AdvanceTable em JSON";
+        exportConfiguration.addEventListener("click", async () => {
+            this.configurationFeedback.classList.remove("is-error");
+            exportConfiguration.disabled = true;
+            try {
+                this.configurationFeedback.textContent =
+                    "Preparando configuração...";
+                this.configurationFeedback.textContent =
+                    await this.onExportConfiguration();
+            } catch (error) {
+                this.configurationFeedback.textContent =
+                    error instanceof Error
+                        ? error.message
+                        : "Não foi possível exportar a configuração.";
+                this.configurationFeedback.classList.add("is-error");
+            } finally {
+                exportConfiguration.disabled = false;
+            }
+        });
+        const importConfiguration = document.createElement("button");
+        importConfiguration.type = "button";
+        importConfiguration.textContent = "Importar configuração";
+        importConfiguration.title =
+            "Carregar uma configuração do AdvanceTable em JSON";
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = ".json,application/json";
+        fileInput.hidden = true;
+        importConfiguration.addEventListener("click", () => {
+            fileInput.value = "";
+            fileInput.click();
+        });
+        fileInput.addEventListener("change", async () => {
+            const file = fileInput.files?.[0];
+            if (!file) return;
+            importConfiguration.disabled = true;
+            this.configurationFeedback.textContent =
+                "Importando configuração...";
+            this.configurationFeedback.classList.remove("is-error");
+            try {
+                const message = await this.onImportConfiguration(
+                    await file.text()
+                );
+                this.configurationFeedback.textContent = message;
+                window.setTimeout(() => this.close(), 900);
+            } catch (error) {
+                this.configurationFeedback.textContent =
+                    error instanceof Error
+                        ? error.message
+                        : "Não foi possível importar a configuração.";
+                this.configurationFeedback.classList.add("is-error");
+            } finally {
+                importConfiguration.disabled = false;
+            }
+        });
+        this.configurationFeedback = document.createElement("span");
+        this.configurationFeedback.className =
+            "power-table__configuration-feedback";
+        configurationActions.append(
+            exportConfiguration,
+            importConfiguration,
+            fileInput,
+            this.configurationFeedback
+        );
         const enabledLabel = document.createElement("label");
         enabledLabel.className = "power-table__rule-switch";
         this.enabledInput = document.createElement("input");
@@ -278,7 +353,7 @@ export class RuleEditor {
         close.textContent = "×";
         close.setAttribute("aria-label", "Fechar editor");
         close.addEventListener("click", () => this.close());
-        headerActions.append(enabledLabel, close);
+        headerActions.append(configurationActions, enabledLabel, close);
         header.append(heading, headerActions);
 
         this.content = document.createElement("div");

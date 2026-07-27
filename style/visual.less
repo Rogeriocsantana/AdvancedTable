@@ -72,42 +72,94 @@
 
     &__toolbar {
         position: relative;
-        flex: 0 0 var(--power-table-toolbar-height);
-        display: grid;
-        grid-template-columns:
-            minmax(0, 1fr)
-            minmax(0, min(var(--power-table-search-width), 50%));
-        align-items: center;
+        z-index: 100;
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: var(--power-table-top-row-gap, 4px);
         min-height: 34px;
         padding: 6px 10px;
         background: var(--power-table-toolbar-background);
         border-bottom: 0;
+    }
 
-        &[data-search-position="left"] {
-            grid-template-columns:
-                minmax(0, min(var(--power-table-search-width), 50%))
-                minmax(0, 1fr);
+    &__top-row {
+        position: relative;
+        display: block;
+        align-items: center;
+        width: 100%;
+        min-width: 0;
 
-            .power-table__search-group {
-                grid-column: 1;
-                grid-row: 1;
-                justify-self: start;
-            }
-
-            .power-table__title {
-                grid-column: 2;
-                grid-row: 1;
-                padding-left: 12px;
-            }
+        &[data-layout-mode="automatic"] {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            align-items: center;
+            column-gap: 8px;
         }
 
-        &[data-search-position="center"] {
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        &[hidden] {
+            display: none;
+        }
+    }
 
-            .power-table__search-group {
-                justify-self: center;
-                width: min(var(--power-table-search-width), 100%);
+    &__top-slot {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+        overflow: visible;
+
+        &[data-item="Download"] {
+            z-index: 1000;
+        }
+
+        &.is-manual {
+            position: absolute;
+            top: 0;
+            width: max-content;
+            max-width: 100%;
+        }
+
+        &[data-item="Pesquisa"] > .power-table__search-group {
+            width: 100%;
+            min-width: 0;
+        }
+
+        &.is-automatic {
+            flex: 0 1 auto;
+            max-width: 100%;
+
+            &[data-item="Pesquisa"] {
+                flex: 1 1 auto;
+                width: 100%;
             }
+
+            > .power-table__search-group {
+                width: 100%;
+            }
+        }
+    }
+
+    &__top-auto-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        max-width: 100%;
+
+        &[data-alignment="left"] {
+            grid-column: 1;
+            justify-content: flex-start;
+        }
+
+        &[data-alignment="center"] {
+            grid-column: 2;
+            width: 100%;
+            justify-content: center;
+        }
+
+        &[data-alignment="right"] {
+            grid-column: 3;
+            justify-content: flex-end;
         }
     }
 
@@ -134,14 +186,14 @@
 
     &__search-group {
         display: flex;
-        gap: 0;
+        gap: 8px;
         width: 100%;
         max-width: 100%;
-        justify-self: end;
     }
 
     &__download-wrapper {
         position: relative;
+        z-index: 1000;
         flex: 0 0 auto;
 
         &[hidden] {
@@ -176,7 +228,7 @@
 
     &__download-menu {
         position: absolute;
-        z-index: 60;
+        z-index: 10000;
         top: calc(100% + 4px);
         right: 0;
         display: flex;
@@ -277,6 +329,10 @@
         min-width: 0;
         flex-direction: column;
         justify-content: center;
+
+        &[hidden] {
+            display: none;
+        }
     }
 
     &__title-text {
@@ -499,6 +555,10 @@
         border-collapse: separate;
         border-spacing: 0;
         table-layout: auto;
+
+        &.has-width-reducible-columns {
+            min-width: 100%;
+        }
     }
 
     th {
@@ -560,6 +620,22 @@
         font-weight: 600;
         text-align: var(--power-table-header-alignment);
         cursor: pointer;
+    }
+
+    &__header-cell.is-width-reducible {
+        overflow: visible;
+
+        .power-table__sort {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    td.is-width-reducible {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     &__column-filter {
@@ -1522,7 +1598,56 @@
     &__rule-header-actions {
         display: flex !important;
         align-items: center;
-        gap: 18px !important;
+        gap: 14px !important;
+    }
+
+    &__configuration-actions {
+        position: relative;
+        display: flex !important;
+        align-items: center;
+        gap: 6px !important;
+
+        > button {
+            height: 32px;
+            padding: 0 11px;
+            color: #005cac;
+            background: #fff;
+            border: 1px solid #9ab9df;
+            border-radius: 5px;
+            font: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+
+            &:hover {
+                background: #e8f3ff;
+            }
+
+            &:disabled {
+                opacity: .55;
+                cursor: wait;
+            }
+        }
+    }
+
+    &__configuration-feedback {
+        position: absolute;
+        top: calc(100% + 5px);
+        right: 0;
+        width: max-content;
+        max-width: 320px;
+        color: #0f7b3e !important;
+        font-size: 10px !important;
+        font-weight: 600;
+        text-align: right;
+
+        &:empty {
+            display: none;
+        }
+
+        &.is-error {
+            color: #ba1a1a !important;
+        }
     }
 
     &__rule-switch {
@@ -2866,6 +2991,25 @@
         &__rule-heading > span,
         &__rule-switch b {
             display: none;
+        }
+
+        &__configuration-actions > button {
+            width: 34px;
+            padding: 0;
+            overflow: hidden;
+            font-size: 0;
+
+            &::before {
+                font-size: 15px;
+            }
+
+            &:first-of-type::before {
+                content: "⇩";
+            }
+
+            &:nth-of-type(2)::before {
+                content: "⇧";
+            }
         }
 
         &__rule-content {

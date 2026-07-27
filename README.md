@@ -4,7 +4,7 @@ Visual de tabela avançada para Power BI, criado para oferecer mais controle sob
 
 O nome exibido no Power BI é **AdvanceTable**. Os pacotes distribuídos utilizam o nome **AdvancedTable**.
 
-> Versão atual: `0.5.11`  
+> Versão atual: `0.5.21`  
 > API de visuais do Power BI: `5.11`
 
 ## Recursos
@@ -22,6 +22,9 @@ O nome exibido no Power BI é **AdvanceTable**. Os pacotes distribuídos utiliza
 
 ### Pesquisa e filtros
 
+- organizador superior responsivo em duas linhas para título/contador, pesquisa, download e paginação;
+- modo manual com linha e posição horizontal independentes, usando o tamanho próprio de cada componente e permitindo sobreposição;
+- modo automático em grade de duas linhas por três posições, com até dois componentes por posição e ajuste fino;
 - uma ou duas caixas de pesquisa;
 - escolha dos campos utilizados em cada pesquisa;
 - pesquisa apenas no visual ou aplicada como filtro no relatório;
@@ -44,6 +47,7 @@ O nome exibido no Power BI é **AdvanceTable**. Os pacotes distribuídos utiliza
 - tamanho do texto, altura das linhas, alinhamento e espaçamento;
 - cores globais de texto e fundo;
 - formatação específica por coluna, com prioridade sobre a configuração global;
+- redução opcional de largura por coluna, com texto completo no tooltip;
 - personalização de cabeçalhos, bordas, títulos e subtítulos;
 - contador de registros;
 - larguras e alinhamentos específicos por coluna;
@@ -61,6 +65,16 @@ O editor próprio de formatação condicional é aberto pelo botão de função 
 - campos e medidas auxiliares usados somente nas regras;
 - preview em tempo real e simulador de valores;
 - opção para remover ou restaurar a formatação de uma coluna.
+
+### Modelos de configuração
+
+- exportação das configurações visuais para um arquivo JSON;
+- importação do modelo em outra instância do AdvanceTable;
+- associação automática das colunas pelo identificador ou nome;
+- transferência da galeria de ícones personalizados;
+- validação do tipo, versão do esquema, GUID e tamanho do arquivo;
+- regras condicionais, etiquetas, barras e ícones aplicados não são
+  transferidos, mantendo o modelo limpo para reutilização.
 
 #### Etiquetas
 
@@ -99,8 +113,8 @@ O editor próprio de formatação condicional é aberto pelo botão de função 
 
 - exportação em Excel (`.xlsx`) e CSV;
 - escopos de resultados filtrados, todos os registros, página atual ou selecionados;
-- uso da API oficial do Power BI, quando permitida pelo administrador;
-- download por página externa como alternativa;
+- menu de formato e escopo exibido acima das demais camadas do visual;
+- download por página externa, evitando a restrição da API oficial pelo tenant;
 - GitHub Pages como opção padrão;
 - servidor HTTPS próprio como alternativa;
 - endereço editável sem necessidade de recompilar o visual.
@@ -117,7 +131,29 @@ No primeiro uso de uma página externa, o Power BI pode solicitar autorização 
 
 ## Capturas de tela
 
-As capturas de tela serão adicionadas posteriormente, utilizando um relatório demonstrativo sem dados reais.
+As imagens abaixo utilizam um relatório demonstrativo sem dados reais.
+
+### Visual completo
+
+![AdvanceTable com pesquisa, paginação, ícones, etiquetas, barras e totais](docs/images/advanced-table-overview.png)
+
+### Formatação condicional
+
+| Editor de regras e preview | Seletor de ícones |
+| --- | --- |
+| ![Editor de formatação condicional](docs/images/conditional-formatting-editor.png) | ![Seletor visual de ícones](docs/images/icon-picker.png) |
+
+### Biblioteca de ícones e organização superior
+
+| Gerenciamento de ícones personalizados | Organizador superior |
+| --- | --- |
+| ![Gerenciamento da biblioteca de ícones](docs/images/icon-management.png) | ![Configurações do organizador superior](docs/images/top-layout-settings.png) |
+
+### Download pelo GitHub Pages
+
+| Exportação da configuração | Exportação da tabela |
+| --- | --- |
+| ![Download do arquivo de configuração JSON](docs/images/configuration-download.png) | ![Download da tabela em Excel](docs/images/xlsx-download.png) |
 
 ## Instalação
 

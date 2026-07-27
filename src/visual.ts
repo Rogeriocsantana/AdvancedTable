@@ -33,6 +33,34 @@ import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 
+interface AdvanceTableConfigurationColumn {
+    queryName: string;
+    displayName: string;
+    objects: Record<string, Record<string, unknown>>;
+}
+
+interface AdvanceTableConfiguration {
+    format: "AdvanceTableConfiguration";
+    schemaVersion: 1;
+    visualGuid: string;
+    visualVersion: string;
+    exportedAt: string;
+    objects: Record<string, Record<string, unknown>>;
+    columns: AdvanceTableConfigurationColumn[];
+}
+
+const CONFIGURATION_OBJECTS = new Set([
+    "table",
+    "titleBar",
+    "search",
+    "download",
+    "topLayout",
+    "ruleEditor",
+    "header",
+    "selection",
+    "columnStyle"
+]);
+
 export class Visual implements IVisual {
     private readonly host: IVisualHost;
     private readonly events: IVisualEventService;
@@ -41,6 +69,7 @@ export class Visual implements IVisual {
     private readonly renderer: TableRenderer;
     private readonly formattingService = new FormattingSettingsService();
     private formattingSettings = new VisualFormattingSettingsModel();
+    private currentDataView?: powerbi.DataView;
     private model: TableModel | null = null;
     private filteredRows: TableRow[] = [];
     private sortQueryName?: string;
@@ -86,6 +115,9 @@ export class Visual implements IVisual {
             onSaveCustomIcons: (icons) => this.saveCustomIcons(icons),
             onSaveIconPreferences: (preferences) =>
                 this.saveIconPreferences(preferences),
+            onExportConfiguration: () => this.exportConfiguration(),
+            onImportConfiguration: (contents) =>
+                this.importConfiguration(contents),
             onOpenRuleEditor: () => {
                 this.host.switchFocusModeState(true);
                 window.setTimeout(() => this.renderer.openRuleEditor(), 120);
@@ -97,6 +129,7 @@ export class Visual implements IVisual {
         this.events.renderingStarted(options);
         try {
             const dataView = options.dataViews?.[0];
+            this.currentDataView = dataView;
             this.formattingSettings = this.formattingService.populateFormattingSettingsModel(
                 VisualFormattingSettingsModel,
                 dataView
@@ -443,6 +476,47 @@ export class Visual implements IVisual {
                     this.formattingSettings.pagination.horizontalPadding.value,
                 paginationBorderRadius:
                     this.formattingSettings.pagination.borderRadius.value,
+                topLayoutMode:
+                    String(this.formattingSettings.topLayout.mode.value),
+                topLayoutTitleRow:
+                    String(this.formattingSettings.topLayout.titleRow.value),
+                topLayoutTitlePosition:
+                    this.formattingSettings.topLayout.titlePosition.value,
+                topLayoutTitleAutomaticAlignment:
+                    String(this.formattingSettings.topLayout
+                        .titleAutomaticAlignment.value),
+                topLayoutTitleAutomaticSpacing:
+                    this.formattingSettings.topLayout.titleAutomaticSpacing.value,
+                topLayoutSearchRow:
+                    String(this.formattingSettings.topLayout.searchRow.value),
+                topLayoutSearchPosition:
+                    this.formattingSettings.topLayout.searchPosition.value,
+                topLayoutSearchAutomaticAlignment:
+                    String(this.formattingSettings.topLayout
+                        .searchAutomaticAlignment.value),
+                topLayoutSearchAutomaticSpacing:
+                    this.formattingSettings.topLayout.searchAutomaticSpacing.value,
+                topLayoutDownloadRow:
+                    String(this.formattingSettings.topLayout.downloadRow.value),
+                topLayoutDownloadPosition:
+                    this.formattingSettings.topLayout.downloadPosition.value,
+                topLayoutDownloadAutomaticAlignment:
+                    String(this.formattingSettings.topLayout
+                        .downloadAutomaticAlignment.value),
+                topLayoutDownloadAutomaticSpacing:
+                    this.formattingSettings.topLayout.downloadAutomaticSpacing.value,
+                topLayoutPaginationRow:
+                    String(this.formattingSettings.topLayout.paginationRow.value),
+                topLayoutPaginationPosition:
+                    this.formattingSettings.topLayout.paginationPosition.value,
+                topLayoutPaginationAutomaticAlignment:
+                    String(this.formattingSettings.topLayout
+                        .paginationAutomaticAlignment.value),
+                topLayoutPaginationAutomaticSpacing:
+                    this.formattingSettings.topLayout
+                        .paginationAutomaticSpacing.value,
+                topLayoutRowGap:
+                    this.formattingSettings.topLayout.rowGap.value,
                 currentPage: this.currentPage,
                 totalPages,
                 filteredRecordCount: this.filteredRows.length,
@@ -464,10 +538,6 @@ export class Visual implements IVisual {
                     String(this.formattingSettings.download.defaultScope.value),
                 downloadShowMenu:
                     this.formattingSettings.download.showMenu.value,
-                downloadPosition:
-                    String(this.formattingSettings.download.position.value),
-                downloadSpacing:
-                    this.formattingSettings.download.spacing.value,
                 downloadShowText:
                     this.formattingSettings.download.showText.value,
                 downloadIconSize:
@@ -550,6 +620,230 @@ export class Visual implements IVisual {
         });
     }
 
+    private cloneConfigurationValue<T>(value: T): T {
+        return JSON.parse(JSON.stringify(value)) as T;
+    }
+
+    private stripAppliedIconProperties(
+        objectName: string,
+        properties: Record<string, unknown>
+    ): Record<string, unknown> {
+        const result = { ...properties };
+        if (objectName === "ruleEditor") {
+            delete result.rulesJson;
+        }
+        if (objectName === "columnStyle") {
+            Object.keys(result)
+                .filter((property) =>
+                    property === "cellMode" ||
+                    property.startsWith("icon") ||
+                    property.startsWith("pill") ||
+                    property.startsWith("bar") ||
+                    property.startsWith("svg")
+                )
+                .forEach((property) => delete result[property]);
+        }
+        return result;
+    }
+
+    private configurationObjects(
+        source: powerbi.DataViewObjects | undefined
+    ): Record<string, Record<string, unknown>> {
+        const result: Record<string, Record<string, unknown>> = {};
+        Object.entries(source || {}).forEach(([objectName, properties]) => {
+            if (!CONFIGURATION_OBJECTS.has(objectName) ||
+                objectName === "general" ||
+                !properties) {
+                return;
+            }
+            result[objectName] = this.stripAppliedIconProperties(
+                objectName,
+                this.cloneConfigurationValue(
+                    properties as unknown as Record<string, unknown>
+                )
+            );
+        });
+        return result;
+    }
+
+    private async exportConfiguration(): Promise<string> {
+        const metadata = this.currentDataView?.metadata;
+        if (!metadata) {
+            throw new Error("Não há dados disponíveis para exportar.");
+        }
+        const objects = this.configurationObjects(metadata.objects);
+        objects.ruleEditor = {
+            ...(objects.ruleEditor || {}),
+            iconsJson: serializeCustomIcons(
+                this.customIcons.filter((icon) => !icon.deleted)
+            ),
+            iconPreferencesJson:
+                serializeIconPreferences(this.iconPreferences)
+        };
+        const configuration: AdvanceTableConfiguration = {
+            format: "AdvanceTableConfiguration",
+            schemaVersion: 1,
+            visualGuid:
+                "advancedTableRogerC40D05D8D12144689810E97FF8C695C8",
+            visualVersion: "0.5.21.0",
+            exportedAt: new Date().toISOString(),
+            objects,
+            columns: metadata.columns
+                .filter((column) => Boolean(column.queryName))
+                .map((column) => ({
+                    queryName: column.queryName || "",
+                    displayName: column.displayName,
+                    objects: this.configurationObjects(column.objects)
+                }))
+        };
+        const contents = JSON.stringify(configuration, null, 2);
+        const fileName =
+            `AdvanceTable-config-${new Date().toISOString().slice(0, 10)}.json`;
+        const legacyBridgeUrl =
+            this.formattingSettings.download.bridgeUrl.value.trim();
+        const bridgeUrl =
+            this.formattingSettings.download.githubUrl.value.trim() ||
+            legacyBridgeUrl ||
+            "https://rogeriocsantana.github.io/AdvancedTable/download-page/";
+        const content = this.bytesToBase64Url(
+            new TextEncoder().encode(contents)
+        );
+        const params = new URLSearchParams({
+            v: "1",
+            n: fileName,
+            t: "application/json;charset=utf-8",
+            d: content
+        });
+        const target = `${bridgeUrl.replace(/#.*$/, "")}#${params.toString()}`;
+        if (target.length > 1_000_000) {
+            throw new Error(
+                "A configuração excedeu o limite do download pela página."
+            );
+        }
+        this.host.launchUrl(target);
+        return "Configuração preparada na página de download.";
+    }
+
+    private remapConfigurationValue(
+        value: unknown,
+        queryMap: Map<string, string>
+    ): unknown {
+        if (typeof value === "string") {
+            return queryMap.get(value) || value;
+        }
+        if (Array.isArray(value)) {
+            return value.map((item) =>
+                this.remapConfigurationValue(item, queryMap)
+            );
+        }
+        if (value && typeof value === "object") {
+            return Object.fromEntries(
+                Object.entries(value).map(([key, child]) => [
+                    key,
+                    this.remapConfigurationValue(child, queryMap)
+                ])
+            );
+        }
+        return value;
+    }
+
+    private parseConfiguration(contents: string): AdvanceTableConfiguration {
+        if (contents.length > 12_000_000) {
+            throw new Error("O arquivo excede o limite de 12 MB.");
+        }
+        let value: unknown;
+        try {
+            value = JSON.parse(contents);
+        } catch {
+            throw new Error("O arquivo não contém um JSON válido.");
+        }
+        const configuration = value as Partial<AdvanceTableConfiguration>;
+        if (configuration.format !== "AdvanceTableConfiguration" ||
+            configuration.schemaVersion !== 1 ||
+            configuration.visualGuid !==
+                "advancedTableRogerC40D05D8D12144689810E97FF8C695C8" ||
+            !configuration.objects ||
+            !Array.isArray(configuration.columns)) {
+            throw new Error(
+                "Este arquivo não é uma configuração válida do AdvanceTable."
+            );
+        }
+        return configuration as AdvanceTableConfiguration;
+    }
+
+    private async importConfiguration(contents: string): Promise<string> {
+        const configuration = this.parseConfiguration(contents);
+        const currentColumns = this.model?.columns || [];
+        const queryMap = new Map<string, string>();
+        const matchedColumns = new Map<
+            AdvanceTableConfigurationColumn,
+            TableColumn
+        >();
+        configuration.columns.forEach((sourceColumn) => {
+            const targetColumn = currentColumns.find(
+                (column) => column.queryName === sourceColumn.queryName
+            ) || currentColumns.find(
+                (column) =>
+                    column.displayName.trim().toLocaleLowerCase() ===
+                    sourceColumn.displayName.trim().toLocaleLowerCase()
+            );
+            if (targetColumn?.queryName) {
+                queryMap.set(sourceColumn.queryName, targetColumn.queryName);
+                matchedColumns.set(sourceColumn, targetColumn);
+            }
+        });
+        const merge: powerbi.VisualObjectInstance[] = [];
+        Object.entries(configuration.objects).forEach(
+            ([objectName, sourceProperties]) => {
+                if (!CONFIGURATION_OBJECTS.has(objectName) ||
+                    objectName === "general") {
+                    return;
+                }
+                let properties = this.stripAppliedIconProperties(
+                    objectName,
+                    this.cloneConfigurationValue(sourceProperties)
+                );
+                properties = this.remapConfigurationValue(
+                    properties,
+                    queryMap
+                ) as Record<string, unknown>;
+                merge.push({
+                    objectName,
+                    selector: null,
+                    properties: properties as powerbi.DataViewObject
+                });
+            }
+        );
+        matchedColumns.forEach((targetColumn, sourceColumn) => {
+            Object.entries(sourceColumn.objects).forEach(
+                ([objectName, sourceProperties]) => {
+                    if (!CONFIGURATION_OBJECTS.has(objectName)) return;
+                    const properties = this.remapConfigurationValue(
+                        this.stripAppliedIconProperties(
+                            objectName,
+                            this.cloneConfigurationValue(sourceProperties)
+                        ),
+                        queryMap
+                    ) as Record<string, unknown>;
+                    if (Object.keys(properties).length === 0) return;
+                    merge.push({
+                        objectName,
+                        selector: { metadata: targetColumn.queryName || "" },
+                        properties: properties as powerbi.DataViewObject
+                    });
+                }
+            );
+        });
+        if (merge.length === 0) {
+            throw new Error("O arquivo não possui configurações aplicáveis.");
+        }
+        this.host.persistProperties({ merge });
+        return matchedColumns.size === configuration.columns.length
+            ? "Configuração importada com sucesso."
+            : `Configuração importada. ${matchedColumns.size} de ` +
+                `${configuration.columns.length} colunas foram associadas.`;
+    }
+
     private configureSearchFields(savedField1?: string, savedField2?: string): void {
         const items: powerbi.IEnumMember[] = (this.model?.columns || [])
             .filter((column) => Boolean(column.queryName))
@@ -601,6 +895,8 @@ export class Visual implements IVisual {
             settings.textColor.visible = false;
             settings.backgroundColor.visible = false;
             settings.alignment.visible = false;
+            settings.allowWidthReduction.visible = false;
+            settings.reducedWidth.visible = false;
             settings.iconStyle.visible = false;
             settings.iconColor.visible = false;
             settings.cellPadding.visible = false;
@@ -619,6 +915,8 @@ export class Visual implements IVisual {
         settings.textColor.visible = true;
         settings.backgroundColor.visible = true;
         settings.alignment.visible = true;
+        settings.allowWidthReduction.visible = true;
+        settings.reducedWidth.visible = column.style.allowWidthReduction;
         settings.iconStyle.visible = false;
         settings.iconColor.visible = false;
         settings.cellPadding.visible = true;
@@ -653,6 +951,9 @@ export class Visual implements IVisual {
         settings.textColor.value = { value: column.style.textColor };
         settings.backgroundColor.value = { value: column.style.backgroundColor };
         settings.alignment.value = column.style.alignment;
+        settings.allowWidthReduction.value =
+            column.style.allowWidthReduction;
+        settings.reducedWidth.value = column.style.reducedWidth;
         settings.iconStyle.value = column.style.iconStyle;
         settings.iconColor.value = { value: column.style.iconColor };
         settings.cellPadding.value = column.style.cellPadding;
@@ -728,6 +1029,8 @@ export class Visual implements IVisual {
             settings.totalAlignment,
             settings.totalFontSize,
             settings.alignment,
+            settings.allowWidthReduction,
+            settings.reducedWidth,
             settings.iconStyle,
             settings.cellPadding,
             settings.headerPadding,

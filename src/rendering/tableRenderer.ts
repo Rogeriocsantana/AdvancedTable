@@ -126,6 +126,24 @@ export interface RenderSettings {
     paginationSpacing: number;
     paginationHorizontalPadding: number;
     paginationBorderRadius: number;
+    topLayoutMode: string;
+    topLayoutTitleRow: string;
+    topLayoutTitlePosition: number;
+    topLayoutTitleAutomaticAlignment: string;
+    topLayoutTitleAutomaticSpacing: number;
+    topLayoutSearchRow: string;
+    topLayoutSearchPosition: number;
+    topLayoutSearchAutomaticAlignment: string;
+    topLayoutSearchAutomaticSpacing: number;
+    topLayoutDownloadRow: string;
+    topLayoutDownloadPosition: number;
+    topLayoutDownloadAutomaticAlignment: string;
+    topLayoutDownloadAutomaticSpacing: number;
+    topLayoutPaginationRow: string;
+    topLayoutPaginationPosition: number;
+    topLayoutPaginationAutomaticAlignment: string;
+    topLayoutPaginationAutomaticSpacing: number;
+    topLayoutRowGap: number;
     currentPage: number;
     totalPages: number;
     filteredRecordCount: number;
@@ -137,8 +155,6 @@ export interface RenderSettings {
     downloadDefaultFormat: string;
     downloadDefaultScope: string;
     downloadShowMenu: boolean;
-    downloadPosition: string;
-    downloadSpacing: number;
     downloadShowText: boolean;
     downloadIconSize: number;
     downloadFontSize: number;
@@ -177,6 +193,8 @@ export interface TableRendererCallbacks {
     onSaveRules(rules: ColumnRuleSet[]): void;
     onSaveCustomIcons(icons: CustomIconAsset[]): void;
     onSaveIconPreferences(preferences: IconPreferences): void;
+    onExportConfiguration(): Promise<string>;
+    onImportConfiguration(contents: string): Promise<string>;
     onOpenRuleEditor(): void;
 }
 
@@ -185,7 +203,10 @@ export class TableRenderer {
     private readonly root: HTMLElement;
     private readonly ruleConfigBar: HTMLDivElement;
     private readonly toolbar: HTMLDivElement;
+    private readonly topRow1: HTMLDivElement;
+    private readonly topRow2: HTMLDivElement;
     private readonly title: HTMLDivElement;
+    private readonly titleCopy: HTMLDivElement;
     private readonly titleText: HTMLSpanElement;
     private readonly subtitle: HTMLSpanElement;
     private readonly recordCount: HTMLSpanElement;
@@ -229,6 +250,9 @@ export class TableRenderer {
         pickerIconSize: "normal",
         nativeIconOrder: []
     };
+    private readonly automaticSlotAssignments = new Map<string, string>();
+    private readonly automaticEntryOrder = new Map<string, number>();
+    private automaticEntrySequence = 0;
 
     constructor(target: HTMLElement) {
         this.root = document.createElement("div");
@@ -236,21 +260,27 @@ export class TableRenderer {
 
         this.toolbar = document.createElement("div");
         this.toolbar.className = "power-table__toolbar";
+        this.topRow1 = document.createElement("div");
+        this.topRow1.className = "power-table__top-row";
+        this.topRow1.dataset.row = "1";
+        this.topRow2 = document.createElement("div");
+        this.topRow2.className = "power-table__top-row";
+        this.topRow2.dataset.row = "2";
         this.title = document.createElement("div");
         this.title.className = "power-table__title";
-        const titleCopy = document.createElement("div");
-        titleCopy.className = "power-table__title-copy";
+        this.titleCopy = document.createElement("div");
+        this.titleCopy.className = "power-table__title-copy";
         this.titleText = document.createElement("span");
         this.titleText.className = "power-table__title-text";
         this.subtitle = document.createElement("span");
         this.subtitle.className = "power-table__subtitle";
-        titleCopy.append(this.titleText, this.subtitle);
+        this.titleCopy.append(this.titleText, this.subtitle);
         this.recordCount = document.createElement("span");
         this.recordCount.className = "power-table__record-count";
         this.recordCountLabel = document.createElement("span");
         this.recordCountLabel.className = "power-table__record-count-label";
         this.recordCount.appendChild(this.recordCountLabel);
-        this.title.append(titleCopy, this.recordCount);
+        this.title.append(this.titleCopy, this.recordCount);
 
         this.searchGroup = document.createElement("div");
         this.searchGroup.className = "power-table__search-group";
@@ -384,11 +414,10 @@ export class TableRenderer {
             event.stopPropagation();
             if (this.currentModel) this.callbacks?.onOpenRuleEditor();
         });
-        this.searchGroup.appendChild(this.downloadWrapper);
         this.ruleConfigBar = document.createElement("div");
         this.ruleConfigBar.className = "power-table__rule-config-bar";
         this.ruleConfigBar.appendChild(this.ruleButton);
-        this.toolbar.append(this.title, this.searchGroup);
+        this.toolbar.append(this.topRow1, this.topRow2);
 
         this.viewport = document.createElement("div");
         this.viewport.className = "power-table__viewport";
@@ -432,7 +461,13 @@ export class TableRenderer {
             (preferences) => {
                 this.currentIconPreferences = preferences;
                 this.callbacks?.onSaveIconPreferences(preferences);
-            }
+            },
+            () =>
+                this.callbacks?.onExportConfiguration() ||
+                Promise.reject(new Error("Exportação indisponível.")),
+            (contents) =>
+                this.callbacks?.onImportConfiguration(contents) ||
+                Promise.reject(new Error("Importação indisponível."))
         );
 
         this.searchInput.addEventListener("input", () => {
@@ -534,10 +569,8 @@ export class TableRenderer {
         this.foot.replaceChildren();
         this.renderFilterChips(settings.columnFilters);
         this.renderPagination(settings);
-        this.filterRegion.hidden =
-            this.filterBar.hidden &&
-            !(settings.paginationEnabled &&
-                settings.paginationPosition === "top");
+        this.applyTopLayout(settings);
+        this.filterRegion.hidden = this.filterBar.hidden;
 
         if (!model || model.columns.length === 0) {
             this.table.hidden = true;
@@ -576,10 +609,17 @@ export class TableRenderer {
         model.columns.forEach((column) => {
             const header = document.createElement("th");
             header.classList.add("power-table__header-cell");
+            if (column.style.allowWidthReduction) {
+                const reducedWidth = Math.max(60, column.style.reducedWidth);
+                header.classList.add("is-width-reducible");
+                header.style.width = `${reducedWidth}px`;
+                header.style.maxWidth = `${reducedWidth}px`;
+            }
             const button = document.createElement("button");
             button.type = "button";
             button.className = "power-table__sort";
             button.textContent = column.displayName;
+            button.title = column.displayName;
             if (column.style.customHeaderPadding) {
                 button.style.paddingLeft = `${column.style.headerPadding}px`;
                 button.style.paddingRight = `${column.style.headerPadding}px`;
@@ -704,6 +744,16 @@ export class TableRenderer {
                 const cell = document.createElement("td");
                 const column = model.columns[columnIndex];
                 const cellStyle = row.cellStyles[columnIndex] || column.style;
+                if (column.style.allowWidthReduction) {
+                    const reducedWidth = Math.max(
+                        60,
+                        column.style.reducedWidth
+                    );
+                    cell.classList.add("is-width-reducible");
+                    cell.style.width = `${reducedWidth}px`;
+                    cell.style.maxWidth = `${reducedWidth}px`;
+                    cell.title = value;
+                }
                 const resolvedRule = resolveRuleStyle(
                     settings.ruleSets,
                     column.queryName,
@@ -989,6 +1039,12 @@ export class TableRenderer {
         this.updateSelectionGroupClasses();
 
         this.table.hidden = false;
+        this.table.classList.toggle(
+            "has-width-reducible-columns",
+            model.columns.some((column) =>
+                column.style.allowWidthReduction
+            )
+        );
         this.foot.hidden = !settings.showTotals;
         this.emptyState.hidden = rows.length > 0;
         this.emptyState.textContent = "Nenhum resultado encontrado.";
@@ -1295,6 +1351,12 @@ export class TableRenderer {
         }
         model.columns.forEach((column, columnIndex) => {
             const cell = document.createElement("td");
+            if (column.style.allowWidthReduction) {
+                const reducedWidth = Math.max(60, column.style.reducedWidth);
+                cell.classList.add("is-width-reducible");
+                cell.style.width = `${reducedWidth}px`;
+                cell.style.maxWidth = `${reducedWidth}px`;
+            }
             if (!column.style.showColumnTotal) {
                 if (columnIndex === 0 && !settings.showCheckboxes) {
                     cell.textContent = settings.totalLabel;
@@ -1734,14 +1796,13 @@ export class TableRenderer {
             "--power-table-pagination-radius",
             `${settings.paginationBorderRadius}px`
         );
-        if (settings.paginationPosition === "top") {
-            this.filterRegion.appendChild(this.pagination);
-        } else {
+        if (settings.paginationPosition === "bottom") {
             this.root.insertBefore(this.pagination, this.emptyState);
         }
         this.root.dataset.selectionBorder = settings.selectionBorderMode;
 
-        this.title.hidden = !settings.showTitle;
+        this.title.hidden = !settings.showTitle && !settings.showRecordCount;
+        this.titleCopy.hidden = !settings.showTitle;
         this.titleText.textContent = settings.titleText;
         this.subtitle.textContent = settings.subtitleText;
         this.subtitle.hidden = !settings.showSubtitle;
@@ -1751,9 +1812,7 @@ export class TableRenderer {
             : settings.recordCountAlignment === "center"
                 ? "auto"
                 : "120px";
-        this.searchGroup.hidden =
-            !settings.showSearch &&
-            !settings.downloadEnabled;
+        this.searchGroup.hidden = !settings.showSearch;
         this.searchShell.hidden = !settings.showSearch;
         this.searchShell2.hidden =
             !settings.showSearch || !settings.showSecondSearch;
@@ -1777,39 +1836,165 @@ export class TableRenderer {
         this.downloadDefaultScope = settings.downloadDefaultScope;
         this.downloadFileName = settings.downloadFileName || "AdvanceTable";
         this.setDownloadFormat(settings.downloadDefaultFormat);
-        if (settings.downloadPosition === "before") {
-            this.searchGroup.insertBefore(
-                this.downloadWrapper,
-                this.searchGroup.firstChild
-            );
-            this.downloadWrapper.style.marginLeft = "0";
-            this.downloadWrapper.style.marginRight =
-                `${settings.downloadSpacing}px`;
-            this.searchShell.style.marginLeft = "0";
-            this.searchShell.style.marginRight =
-                `${settings.searchHorizontalMargin}px`;
-            this.searchShell2.style.marginLeft =
-                `${settings.searchHorizontalMargin + 8}px`;
-            this.searchShell2.style.marginRight =
-                `${settings.searchHorizontalMargin}px`;
-        } else {
-            this.searchGroup.appendChild(this.downloadWrapper);
-            this.downloadWrapper.style.marginLeft =
-                `${settings.downloadSpacing}px`;
-            this.downloadWrapper.style.marginRight = "0";
-            this.searchShell.style.marginLeft =
-                `${settings.searchHorizontalMargin}px`;
-            this.searchShell.style.marginRight = settings.showSecondSearch
-                ? `${settings.searchHorizontalMargin}px`
-                : "0";
-            this.searchShell2.style.marginLeft =
-                `${settings.searchHorizontalMargin + 8}px`;
-            this.searchShell2.style.marginRight = "0";
-        }
+        this.searchShell.style.margin = "0";
+        this.searchShell2.style.margin = "0";
+        this.downloadWrapper.style.margin = "0";
+        this.applyTopLayout(settings);
         this.updateSearchAction(this.searchInput, this.searchAction);
         this.updateSearchAction(this.searchInput2, this.searchAction2);
         this.toolbar.dataset.searchPosition = settings.searchPosition;
         this.toolbar.hidden = false;
+    }
+
+    private applyTopLayout(settings: RenderSettings): void {
+        type LayoutItem = {
+            key: string;
+            element: HTMLElement;
+            row: string;
+            position: number;
+            automaticAlignment: string;
+            automaticSpacing: number;
+            visible: boolean;
+        };
+        const items: LayoutItem[] = [
+            {
+                key: "Título e contador",
+                element: this.title,
+                row: settings.topLayoutTitleRow,
+                position: settings.topLayoutTitlePosition,
+                automaticAlignment: settings.topLayoutTitleAutomaticAlignment,
+                automaticSpacing: settings.topLayoutTitleAutomaticSpacing,
+                visible: settings.showTitle || settings.showRecordCount
+            },
+            {
+                key: "Pesquisa",
+                element: this.searchGroup,
+                row: settings.topLayoutSearchRow,
+                position: settings.topLayoutSearchPosition,
+                automaticAlignment: settings.topLayoutSearchAutomaticAlignment,
+                automaticSpacing: settings.topLayoutSearchAutomaticSpacing,
+                visible: settings.showSearch
+            },
+            {
+                key: "Download",
+                element: this.downloadWrapper,
+                row: settings.topLayoutDownloadRow,
+                position: settings.topLayoutDownloadPosition,
+                automaticAlignment: settings.topLayoutDownloadAutomaticAlignment,
+                automaticSpacing: settings.topLayoutDownloadAutomaticSpacing,
+                visible: settings.downloadEnabled
+            },
+            {
+                key: "Paginação",
+                element: this.pagination,
+                row: settings.topLayoutPaginationRow,
+                position: settings.topLayoutPaginationPosition,
+                automaticAlignment: settings.topLayoutPaginationAutomaticAlignment,
+                automaticSpacing: settings.topLayoutPaginationAutomaticSpacing,
+                visible: settings.paginationEnabled &&
+                    settings.paginationPosition !== "bottom"
+            }
+        ];
+        this.topRow1.replaceChildren();
+        this.topRow2.replaceChildren();
+        (["1", "2"] as const).forEach((rowNumber) => {
+            const row = rowNumber === "1" ? this.topRow1 : this.topRow2;
+            row.dataset.layoutMode = settings.topLayoutMode;
+            const rowItems = items.filter(
+                (item) => item.visible && item.row === rowNumber
+            );
+            if (settings.topLayoutMode === "automatic") {
+                const alignments = ["left", "center", "right"];
+                const groups = new Map<string, LayoutItem[]>(
+                    alignments.map((alignment) => [alignment, []])
+                );
+                rowItems.forEach((item) => {
+                    let alignment = alignments.includes(item.automaticAlignment)
+                        ? item.automaticAlignment
+                        : "left";
+                    if ((groups.get(alignment)?.length || 0) >= 2) {
+                        alignment = alignments.find(
+                            (candidate) => (groups.get(candidate)?.length || 0) < 2
+                        ) || alignment;
+                    }
+                    const assignment = `${rowNumber}:${alignment}`;
+                    if (this.automaticSlotAssignments.get(item.key) !== assignment) {
+                        this.automaticSlotAssignments.set(item.key, assignment);
+                        this.automaticEntrySequence += 1;
+                        this.automaticEntryOrder.set(
+                            item.key,
+                            this.automaticEntrySequence
+                        );
+                    }
+                    groups.get(alignment)?.push(item);
+                });
+                alignments.forEach((alignment) => {
+                    const groupItems = groups.get(alignment) || [];
+                    if (groupItems.length === 0) return;
+                    const group = document.createElement("div");
+                    group.className = "power-table__top-auto-group";
+                    group.dataset.alignment = alignment;
+                    groupItems
+                        .sort((a, b) =>
+                            (this.automaticEntryOrder.get(a.key) || 0) -
+                            (this.automaticEntryOrder.get(b.key) || 0)
+                        )
+                        .forEach((item) => {
+                            const slot = document.createElement("div");
+                            slot.className = "power-table__top-slot is-automatic";
+                            slot.dataset.item = item.key;
+                            if (item.key === "Pesquisa") {
+                                const searchWidth = settings.searchWidth > 0
+                                    ? settings.searchWidth
+                                    : 390;
+                                slot.style.width = `${searchWidth}px`;
+                                slot.style.maxWidth = "100%";
+                            }
+                            const spacing = alignment === "center"
+                                ? Math.max(-5, Math.min(5, item.automaticSpacing))
+                                : Math.max(0, Math.min(10, item.automaticSpacing));
+                            const direction = alignment === "right" ? -1 : 1;
+                            slot.style.transform =
+                                `translateX(${spacing * direction}px)`;
+                            slot.appendChild(item.element);
+                            group.appendChild(slot);
+                        });
+                    row.appendChild(group);
+                });
+            } else {
+                rowItems.forEach((item) => {
+                    const position = Math.max(0, Math.min(100, item.position));
+                    const slot = document.createElement("div");
+                    slot.className = "power-table__top-slot is-manual";
+                    slot.dataset.item = item.key;
+                    if (item.key === "Pesquisa") {
+                        const searchWidth = settings.searchWidth > 0
+                            ? settings.searchWidth
+                            : 390;
+                        slot.style.width =
+                            `${Math.min(searchWidth, row.clientWidth)}px`;
+                    }
+                    slot.style.left = `${position}%`;
+                    slot.style.transform = `translateX(-${position}%)`;
+                    slot.appendChild(item.element);
+                    row.appendChild(slot);
+                });
+            }
+            row.hidden = row.childElementCount === 0;
+            row.style.height = row.hidden
+                ? "0"
+                : `${Math.max(
+                    1,
+                    ...Array.from(row.children).map(
+                        (child) => (child as HTMLElement).offsetHeight
+                    )
+                )}px`;
+        });
+        this.toolbar.style.setProperty(
+            "--power-table-top-row-gap",
+            `${Math.max(0, settings.topLayoutRowGap)}px`
+        );
+        this.toolbar.removeAttribute("title");
     }
 
     private createCellIcon(

@@ -16,6 +16,8 @@ export interface ColumnStyle {
     cellMode: string;
     textColor: string;
     backgroundColor: string;
+    allowWidthReduction: boolean;
+    reducedWidth: number;
     customTextColor: boolean;
     customBackgroundColor: boolean;
     hasRowTextColor: boolean;
