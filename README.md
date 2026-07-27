@@ -4,7 +4,7 @@ Visual de tabela avançada para Power BI, criado para oferecer mais controle sob
 
 O nome exibido no Power BI é **AdvanceTable**. Os pacotes distribuídos utilizam o nome **AdvancedTable**.
 
-> Versão atual: `0.5.24`  
+> Versão atual: `0.5.25`  
 > API de visuais do Power BI: `5.11`
 
 ## Recursos
@@ -72,10 +72,13 @@ O editor próprio de formatação condicional é aberto pelo botão de função 
 - exportação das configurações visuais para um arquivo JSON;
 - importação do modelo em outra instância do AdvanceTable;
 - associação automática das colunas pelo identificador ou nome;
-- transferência da galeria de ícones personalizados;
+- preservação das preferências da galeria de ícones nativos;
 - validação do tipo, versão do esquema, GUID e tamanho do arquivo;
 - regras condicionais, etiquetas, barras e ícones aplicados não são
   transferidos, mantendo o modelo limpo para reutilização.
+- arquivos PNG e SVG importados não são incluídos na exportação, evitando
+  configurações excessivamente grandes; eles permanecem intactos no visual
+  que recebe a configuração.
 
 #### Etiquetas
 

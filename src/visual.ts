@@ -640,6 +640,7 @@ export class Visual implements IVisual {
         const result = { ...properties };
         if (objectName === "ruleEditor") {
             delete result.rulesJson;
+            delete result.iconsJson;
         }
         if (objectName === "columnStyle") {
             Object.keys(result)
@@ -683,9 +684,6 @@ export class Visual implements IVisual {
         const objects = this.configurationObjects(metadata.objects);
         objects.ruleEditor = {
             ...(objects.ruleEditor || {}),
-            iconsJson: serializeCustomIcons(
-                this.customIcons.filter((icon) => !icon.deleted)
-            ),
             iconPreferencesJson:
                 serializeIconPreferences(this.iconPreferences)
         };
@@ -694,7 +692,7 @@ export class Visual implements IVisual {
             schemaVersion: 1,
             visualGuid:
                 "advancedTableRogerC40D05D8D12144689810E97FF8C695C8",
-            visualVersion: "0.5.24.0",
+            visualVersion: "0.5.25.0",
             exportedAt: new Date().toISOString(),
             objects,
             columns: metadata.columns
