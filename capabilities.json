@@ -39,6 +39,9 @@
                 },
                 "hoverBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } }
                 ,"hoverRadius": { "type": { "numeric": true } }
+                ,"showRowDividers": { "type": { "bool": true } }
+                ,"rowDividerColor": { "type": { "fill": { "solid": { "color": true } } } }
+                ,"rowDividerWidth": { "type": { "numeric": true } }
                 ,"showTotals": { "type": { "bool": true } }
                 ,"totalLabel": { "type": { "text": true } }
                 ,"totalBackgroundColor": { "type": { "fill": { "solid": { "color": true } } } }

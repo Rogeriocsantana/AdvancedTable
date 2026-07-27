@@ -273,6 +273,12 @@ export class Visual implements IVisual {
                     this.formattingSettings.table.hoverBackgroundColor.value.value,
                 hoverRadius:
                     this.formattingSettings.table.hoverRadius.value,
+                showRowDividers:
+                    this.formattingSettings.table.showRowDividers.value,
+                rowDividerColor:
+                    this.formattingSettings.table.rowDividerColor.value.value,
+                rowDividerWidth:
+                    this.formattingSettings.table.rowDividerWidth.value,
                 showTotals: this.formattingSettings.table.showTotals.value,
                 totalLabel: this.formattingSettings.table.totalLabel.value,
                 totalBackground:
@@ -688,7 +694,7 @@ export class Visual implements IVisual {
             schemaVersion: 1,
             visualGuid:
                 "advancedTableRogerC40D05D8D12144689810E97FF8C695C8",
-            visualVersion: "0.5.22.0",
+            visualVersion: "0.5.24.0",
             exportedAt: new Date().toISOString(),
             objects,
             columns: metadata.columns

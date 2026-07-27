@@ -17,6 +17,9 @@ export interface RenderSettings {
     valueAlignment: string;
     hoverBackground: string;
     hoverRadius: number;
+    showRowDividers: boolean;
+    rowDividerColor: string;
+    rowDividerWidth: number;
     showTotals: boolean;
     totalLabel: string;
     totalBackground: string;
@@ -1532,6 +1535,16 @@ export class TableRenderer {
         this.root.dataset.valueAlignment = settings.valueAlignment;
         setVariable("--power-table-hover-background", settings.hoverBackground);
         setVariable("--power-table-hover-radius", `${settings.hoverRadius}px`);
+        setVariable(
+            "--power-table-row-divider-color",
+            settings.rowDividerColor
+        );
+        setVariable(
+            "--power-table-row-divider-width",
+            `${settings.showRowDividers
+                ? Math.max(0, settings.rowDividerWidth)
+                : 0}px`
+        );
         setVariable("--power-table-total-background", settings.totalBackground);
         setVariable("--power-table-total-color", settings.totalTextColor);
         setVariable("--power-table-total-alignment", settings.totalAlignment);

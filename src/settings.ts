@@ -52,6 +52,24 @@ class TableBaseSettings extends FormattingSettingsCompositeCard {
         value: 10
     });
 
+    showRowDividers = new formattingSettings.ToggleSwitch({
+        name: "showRowDividers",
+        displayName: "Mostrar linhas divisórias",
+        value: true
+    });
+
+    rowDividerColor = new formattingSettings.ColorPicker({
+        name: "rowDividerColor",
+        displayName: "Cor das linhas divisórias",
+        value: { value: "#EDEDED" }
+    });
+
+    rowDividerWidth = new formattingSettings.NumUpDown({
+        name: "rowDividerWidth",
+        displayName: "Espessura das linhas",
+        value: 1
+    });
+
     showTotals = new formattingSettings.ToggleSwitch({
         name: "showTotals",
         displayName: "Mostrar linha de total",
@@ -137,7 +155,10 @@ class TableBaseSettings extends FormattingSettingsCompositeCard {
                 this.backgroundColor,
                 this.valueAlignment,
                 this.hoverBackgroundColor,
-                this.hoverRadius
+                this.hoverRadius,
+                this.showRowDividers,
+                this.rowDividerColor,
+                this.rowDividerWidth
             ]
         }),
         new FormattingSettingsGroup({
@@ -194,6 +215,8 @@ class TableBaseSettings extends FormattingSettingsCompositeCard {
         this.totalMenuBorderColor.visible = showMenu;
         this.totalMenuFontSize.visible = showMenu;
         this.totalMenuRadius.visible = showMenu;
+        this.rowDividerColor.visible = this.showRowDividers.value;
+        this.rowDividerWidth.visible = this.showRowDividers.value;
     }
 }
 
@@ -1409,6 +1432,9 @@ class TableCardSettings extends FormattingSettingsCompositeCard {
     valueAlignment = this.base.valueAlignment;
     hoverBackgroundColor = this.base.hoverBackgroundColor;
     hoverRadius = this.base.hoverRadius;
+    showRowDividers = this.base.showRowDividers;
+    rowDividerColor = this.base.rowDividerColor;
+    rowDividerWidth = this.base.rowDividerWidth;
     showTotals = this.base.showTotals;
     totalLabel = this.base.totalLabel;
     totalBackgroundColor = this.base.totalBackgroundColor;

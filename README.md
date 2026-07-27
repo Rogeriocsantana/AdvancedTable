@@ -4,7 +4,7 @@ Visual de tabela avançada para Power BI, criado para oferecer mais controle sob
 
 O nome exibido no Power BI é **AdvanceTable**. Os pacotes distribuídos utilizam o nome **AdvancedTable**.
 
-> Versão atual: `0.5.23`  
+> Versão atual: `0.5.24`  
 > API de visuais do Power BI: `5.11`
 
 ## Recursos
@@ -46,6 +46,7 @@ O nome exibido no Power BI é **AdvanceTable**. Os pacotes distribuídos utiliza
 
 - tamanho do texto, altura das linhas, alinhamento e espaçamento;
 - cores globais de texto e fundo;
+- exibição, cor e espessura configuráveis das linhas divisórias;
 - formatação específica por coluna, com prioridade sobre a configuração global;
 - redução opcional de largura por coluna, com texto completo no tooltip;
 - personalização de cabeçalhos, bordas, títulos e subtítulos;
