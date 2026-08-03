@@ -40,6 +40,12 @@ class TableBaseSettings extends FormattingSettingsCompositeCard {
         supportsNoSelection: true
     });
 
+    cellPadding = new formattingSettings.NumUpDown({
+        name: "cellPadding",
+        displayName: "Espaçamento lateral das células",
+        value: 12
+    });
+
     hoverBackgroundColor = new formattingSettings.ColorPicker({
         name: "hoverBackgroundColor",
         displayName: "Cor de fundo ao passar o mouse",
@@ -154,6 +160,7 @@ class TableBaseSettings extends FormattingSettingsCompositeCard {
                 this.textColor,
                 this.backgroundColor,
                 this.valueAlignment,
+                this.cellPadding,
                 this.hoverBackgroundColor,
                 this.hoverRadius,
                 this.showRowDividers,
@@ -244,6 +251,13 @@ class TitleBarCardSettings extends FormattingSettingsCompositeCard {
         name: "titleColor",
         displayName: "Cor do título",
         value: { value: "#242424" }
+    });
+
+    titleAlignment = new formattingSettings.AlignmentGroup({
+        name: "titleAlignment",
+        displayName: "Alinhamento do título",
+        value: "left",
+        mode: powerbi.visuals.AlignmentGroupMode.Horizonal
     });
 
     showSubtitle = new formattingSettings.ToggleSwitch({
@@ -349,6 +363,7 @@ class TitleBarCardSettings extends FormattingSettingsCompositeCard {
                 this.titleText,
                 this.titleFontSize,
                 this.titleColor,
+                this.titleAlignment,
                 this.showSubtitle,
                 this.subtitleText,
                 this.subtitleFontSize,
@@ -1437,6 +1452,7 @@ class TableCardSettings extends FormattingSettingsCompositeCard {
     textColor = this.base.textColor;
     backgroundColor = this.base.backgroundColor;
     valueAlignment = this.base.valueAlignment;
+    cellPadding = this.base.cellPadding;
     hoverBackgroundColor = this.base.hoverBackgroundColor;
     hoverRadius = this.base.hoverRadius;
     showRowDividers = this.base.showRowDividers;

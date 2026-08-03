@@ -55,6 +55,7 @@
                         ]
                     }
                 }
+                ,"cellPadding": { "type": { "numeric": true } }
                 ,"totalFontSize": { "type": { "formatting": { "fontSize": true } } }
                 ,"totalBorderRadius": { "type": { "numeric": true } }
                 ,"totalsMode": {
@@ -167,6 +168,11 @@
                 "titleText": { "type": { "text": true } },
                 "titleFontSize": { "type": { "formatting": { "fontSize": true } } },
                 "titleColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "titleAlignment": { "type": { "enumeration": [
+                    { "displayName": "Esquerda", "value": "left" },
+                    { "displayName": "Centro", "value": "center" },
+                    { "displayName": "Direita", "value": "right" }
+                ] } },
                 "showSubtitle": { "type": { "bool": true } },
                 "subtitleText": { "type": { "text": true } },
                 "subtitleFontSize": { "type": { "formatting": { "fontSize": true } } },

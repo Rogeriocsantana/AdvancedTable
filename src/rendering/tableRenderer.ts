@@ -15,6 +15,7 @@ export interface RenderSettings {
     textColor: string;
     backgroundColor: string;
     valueAlignment: string;
+    cellPadding: number;
     hoverBackground: string;
     hoverRadius: number;
     showRowDividers: boolean;
@@ -36,6 +37,7 @@ export interface RenderSettings {
     titleText: string;
     titleFontSize: number;
     titleColor: string;
+    titleAlignment: string;
     showSubtitle: boolean;
     subtitleText: string;
     subtitleFontSize: number;
@@ -225,6 +227,8 @@ export class TableRenderer {
     private readonly searchAction: HTMLButtonElement;
     private readonly searchAction2: HTMLButtonElement;
     private readonly downloadWrapper: HTMLDivElement;
+    private readonly sortMenuButton: HTMLButtonElement;
+    private readonly sortMenu: HTMLDivElement;
     private readonly downloadButton: HTMLButtonElement;
     private readonly downloadText: HTMLSpanElement;
     private readonly downloadMenu: HTMLDivElement;
@@ -258,6 +262,8 @@ export class TableRenderer {
     private readonly automaticSlotAssignments = new Map<string, string>();
     private readonly automaticEntryOrder = new Map<string, number>();
     private automaticEntrySequence = 0;
+    private currentSortColumn?: TableColumn;
+    private currentSortDirection: "asc" | "desc" = "asc";
 
     constructor(target: HTMLElement) {
         this.root = document.createElement("div");
@@ -422,7 +428,22 @@ export class TableRenderer {
         this.ruleConfigBar = document.createElement("div");
         this.ruleConfigBar.className = "power-table__rule-config-bar";
         this.ruleConfigBar.appendChild(this.ruleButton);
+        this.sortMenuButton = document.createElement("button");
+        this.sortMenuButton.type = "button";
+        this.sortMenuButton.className = "power-table__sort-menu-button";
+        this.sortMenuButton.textContent = "•••";
+        this.sortMenuButton.title = "Opções de classificação";
+        this.sortMenuButton.setAttribute("aria-label", "Opções de classificação");
+        this.sortMenu = document.createElement("div");
+        this.sortMenu.className = "power-table__sort-menu";
+        this.sortMenu.hidden = true;
+        this.sortMenuButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            this.renderSortMenu();
+            this.sortMenu.hidden = !this.sortMenu.hidden;
+        });
         this.toolbar.append(this.topRow1, this.topRow2);
+        this.toolbar.append(this.sortMenuButton, this.sortMenu);
 
         this.viewport = document.createElement("div");
         this.viewport.className = "power-table__viewport";
@@ -502,6 +523,7 @@ export class TableRenderer {
         this.updateSearchAction(this.searchInput, this.searchAction);
         this.updateSearchAction(this.searchInput2, this.searchAction2);
         this.root.addEventListener("click", (event) => {
+            if (!this.sortMenu.hidden) this.sortMenu.hidden = true;
             if (event.target === this.root || event.target === this.viewport) {
                 this.callbacks?.onClearSelection();
             }
@@ -552,6 +574,10 @@ export class TableRenderer {
     ): void {
         this.applySettings(settings);
         this.currentModel = model;
+        this.currentSortColumn = model?.columns.find(
+            (column) => column.queryName === sortQueryName
+        );
+        this.currentSortDirection = sortDirection || "asc";
         this.currentRuleSets = settings.ruleSets;
         this.currentCustomIcons = settings.customIcons;
         this.currentIconPreferences = settings.iconPreferences;
@@ -698,7 +724,8 @@ export class TableRenderer {
                     column,
                     model.rows,
                     model.columns.indexOf(column),
-                    activeFilter?.values
+                    activeFilter?.values,
+                    model.columns
                 );
             });
             header.addEventListener("contextmenu", (event) => {
@@ -709,7 +736,8 @@ export class TableRenderer {
                     column,
                     model.rows,
                     model.columns.indexOf(column),
-                    activeFilter?.values
+                    activeFilter?.values,
+                    model.columns
                 );
             });
             const headerContent = document.createElement("div");
@@ -1296,7 +1324,8 @@ export class TableRenderer {
         column: TableColumn,
         rows: TableRow[],
         columnIndex: number,
-        currentValues?: string[]
+        currentValues?: string[],
+        columns: TableColumn[] = []
     ): void {
         this.root.querySelectorAll(".power-table__filter-menu").forEach(
             (openMenu) => openMenu.remove()
@@ -1333,6 +1362,26 @@ export class TableRenderer {
         descending.addEventListener("click", () => {
             menu.remove();
             this.callbacks?.onSort(column, "desc");
+        });
+        const sortBy = document.createElement("button");
+        sortBy.type = "button";
+        sortBy.className = "power-table__filter-sort-by";
+        sortBy.textContent = "Classificar por ›";
+        const sortByMenu = document.createElement("div");
+        sortByMenu.className = "power-table__filter-sort-by-menu";
+        sortByMenu.hidden = true;
+        columns.forEach((sortColumn) => {
+            const option = document.createElement("button");
+            option.type = "button";
+            option.textContent = sortColumn.displayName;
+            option.addEventListener("click", () => {
+                menu.remove();
+                this.callbacks?.onSort(sortColumn, "asc");
+            });
+            sortByMenu.appendChild(option);
+        });
+        sortBy.addEventListener("click", () => {
+            sortByMenu.hidden = !sortByMenu.hidden;
         });
         const clear = document.createElement("button");
         clear.type = "button";
@@ -1418,6 +1467,8 @@ export class TableRenderer {
             title,
             ascending,
             descending,
+            sortBy,
+            sortByMenu,
             clear,
             search,
             selectAllLabel,
@@ -1726,6 +1777,7 @@ export class TableRenderer {
         );
         setVariable("--power-table-toolbar-background", settings.titleBarBackground);
         setVariable("--power-table-search-width", `${settings.searchWidth}px`);
+        setVariable("--power-table-cell-padding", `${Math.max(0, settings.cellPadding)}px`);
         setVariable("--power-table-search-icon-size", `${settings.searchIconSize}px`);
         setVariable("--power-table-search-icon-color", settings.searchIconColor);
         setVariable(
@@ -1945,6 +1997,8 @@ export class TableRenderer {
         this.title.hidden = !settings.showTitle && !settings.showRecordCount;
         this.titleCopy.hidden = !settings.showTitle;
         this.titleText.textContent = settings.titleText;
+        this.title.style.justifyContent = settings.titleAlignment;
+        this.titleCopy.style.textAlign = settings.titleAlignment;
         this.subtitle.textContent = settings.subtitleText;
         this.subtitle.hidden = !settings.showSubtitle;
         this.recordCount.hidden = !settings.showRecordCount;
@@ -2003,7 +2057,7 @@ export class TableRenderer {
                 element: this.title,
                 row: settings.topLayoutTitleRow,
                 position: settings.topLayoutTitlePosition,
-                automaticAlignment: settings.topLayoutTitleAutomaticAlignment,
+                automaticAlignment: settings.titleAlignment,
                 automaticSpacing: settings.topLayoutTitleAutomaticSpacing,
                 visible: settings.showTitle || settings.showRecordCount
             },

@@ -279,6 +279,7 @@ export class Visual implements IVisual {
                     this.formattingSettings.table.backgroundColor.value.value,
                 valueAlignment:
                     String(this.formattingSettings.table.valueAlignment.value),
+                cellPadding: this.formattingSettings.table.cellPadding.value,
                 hoverBackground:
                     this.formattingSettings.table.hoverBackgroundColor.value.value,
                 hoverRadius:
@@ -317,6 +318,9 @@ export class Visual implements IVisual {
                 titleText: this.formattingSettings.titleBar.titleText.value,
                 titleFontSize: this.formattingSettings.titleBar.titleFontSize.value,
                 titleColor: this.formattingSettings.titleBar.titleColor.value.value,
+                titleAlignment: this.toFlexAlignment(
+                    String(this.formattingSettings.titleBar.titleAlignment.value)
+                ),
                 showSubtitle:
                     this.formattingSettings.titleBar.showSubtitle.value,
                 subtitleText:
