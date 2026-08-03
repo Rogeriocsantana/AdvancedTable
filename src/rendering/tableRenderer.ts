@@ -85,6 +85,7 @@ export interface RenderSettings {
     headerAlignment: string;
     headerHeight: number;
     headerPadding: number;
+    showColumnFilters: boolean;
     showCheckboxes: boolean;
     showSelectAll: boolean;
     selectionMode: string;
@@ -190,6 +191,7 @@ export interface TableRendererCallbacks {
     onSort(column: TableColumn, direction?: "asc" | "desc"): void;
     onColumnFilter(column: TableColumn, values: string[]): void;
     onClearColumnFilter(queryName: string): void;
+    onColumnResize(column: TableColumn, width: number): void;
     onClearSelection(): void;
     onPageChange(page: number): void;
     onDownload(scope: string, format: string, fileName: string): void;
@@ -613,10 +615,14 @@ export class TableRenderer {
             const header = document.createElement("th");
             header.classList.add("power-table__header-cell");
             if (column.style.allowWidthReduction) {
-                const reducedWidth = Math.max(60, column.style.reducedWidth);
+                const reducedWidth = Math.max(0, column.style.reducedWidth);
                 header.classList.add("is-width-reducible");
-                header.style.width = `${reducedWidth}px`;
-                header.style.maxWidth = `${reducedWidth}px`;
+                header.classList.toggle("is-hidden-column", reducedWidth === 0);
+                header.style.width = `${reducedWidth === 0 ? 7 : reducedWidth}px`;
+                header.style.minWidth =
+                    `${reducedWidth === 0 ? 7 : reducedWidth}px`;
+                header.style.maxWidth =
+                    `${reducedWidth === 0 ? 7 : reducedWidth}px`;
             }
             const button = document.createElement("button");
             button.type = "button";
@@ -651,10 +657,16 @@ export class TableRenderer {
                     sortDirection === "desc" ? "descending" : "ascending"
                 );
             }
-            button.addEventListener("click", () => this.callbacks?.onSort(column));
             const filterButton = document.createElement("button");
             filterButton.type = "button";
             filterButton.className = "power-table__column-filter";
+            const showColumnFilter =
+                column.style.filterVisibility === "show"
+                    ? true
+                    : column.style.filterVisibility === "hide"
+                        ? false
+                        : Boolean(settings.showColumnFilters);
+            filterButton.hidden = !showColumnFilter;
             const activeFilter = settings.columnFilters.find(
                 (filter) => filter.queryName === column.queryName
             );
@@ -689,10 +701,69 @@ export class TableRenderer {
                     activeFilter?.values
                 );
             });
+            header.addEventListener("contextmenu", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.openColumnFilterMenu(
+                    header,
+                    column,
+                    model.rows,
+                    model.columns.indexOf(column),
+                    activeFilter?.values
+                );
+            });
             const headerContent = document.createElement("div");
             headerContent.className = "power-table__header-content";
-            headerContent.append(button, filterButton);
+            headerContent.hidden =
+                column.style.allowWidthReduction &&
+                column.style.reducedWidth <= 0;
+            headerContent.appendChild(button);
+            if (showColumnFilter) {
+                headerContent.appendChild(filterButton);
+            }
             header.appendChild(headerContent);
+            const resizeHandle = document.createElement("span");
+            resizeHandle.className = "power-table__column-resizer";
+            resizeHandle.title = "Arraste para redimensionar a coluna";
+            resizeHandle.addEventListener("pointerdown", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const startX = event.clientX;
+                const startWidth = header.getBoundingClientRect().width;
+                resizeHandle.setPointerCapture(event.pointerId);
+                const move = (moveEvent: PointerEvent): void => {
+                    const rawWidth = Math.round(
+                        startWidth + moveEvent.clientX - startX
+                    );
+                    const width = rawWidth <= 12 ? 0 : rawWidth;
+                    header.classList.add("is-width-reducible");
+                    header.classList.toggle("is-hidden-column", width === 0);
+                    headerContent.hidden = width === 0;
+                    header.style.width = `${width === 0 ? 7 : width}px`;
+                    header.style.minWidth = `${width === 0 ? 7 : width}px`;
+                    header.style.maxWidth = `${width === 0 ? 7 : width}px`;
+                    resizeHandle.dataset.width = String(width);
+                };
+                const finish = (finishEvent: PointerEvent): void => {
+                    resizeHandle.removeEventListener("pointermove", move);
+                    resizeHandle.removeEventListener("pointerup", finish);
+                    resizeHandle.removeEventListener("pointercancel", finish);
+                    const width = Number(
+                        resizeHandle.dataset.width || Math.round(startWidth)
+                    );
+                    resizeHandle.releasePointerCapture(finishEvent.pointerId);
+                    this.callbacks?.onColumnResize(column, width);
+                };
+                resizeHandle.addEventListener("pointermove", move);
+                resizeHandle.addEventListener("pointerup", finish);
+                resizeHandle.addEventListener("pointercancel", finish);
+            });
+            resizeHandle.addEventListener("dblclick", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.callbacks?.onColumnResize(column, -1);
+            });
+            header.appendChild(resizeHandle);
             headerRow.appendChild(header);
         });
         this.head.appendChild(headerRow);
@@ -749,11 +820,15 @@ export class TableRenderer {
                 const cellStyle = row.cellStyles[columnIndex] || column.style;
                 if (column.style.allowWidthReduction) {
                     const reducedWidth = Math.max(
-                        60,
+                        0,
                         column.style.reducedWidth
                     );
+                    if (reducedWidth === 0) {
+                        cell.hidden = true;
+                    }
                     cell.classList.add("is-width-reducible");
                     cell.style.width = `${reducedWidth}px`;
+                    cell.style.minWidth = `${reducedWidth}px`;
                     cell.style.maxWidth = `${reducedWidth}px`;
                     cell.title = value;
                 }
@@ -811,9 +886,13 @@ export class TableRenderer {
                     : resolvedRule?.backgroundColor ||
                         ruleBackground ||
                         baseBackgroundColor;
-                if (cellStyle.alignment !== "auto") {
-                    cell.style.textAlign = cellStyle.alignment;
-                }
+                const resolvedCellAlignment = this.resolveCellAlignment(
+                    column.style.alignment,
+                    settings.valueAlignment,
+                    column.isNumeric
+                );
+                cell.style.textAlign = resolvedCellAlignment;
+                cell.classList.add(`is-align-${resolvedCellAlignment}`);
                 if (displayMode === "pill") {
                     const pill = document.createElement("span");
                     pill.className = "power-table__pill";
@@ -991,6 +1070,13 @@ export class TableRenderer {
                 } else if (displayMode === "icon") {
                     const content = document.createElement("span");
                     content.className = "power-table__cell-content";
+                    content.style.width = "100%";
+                    content.style.justifyContent =
+                        resolvedCellAlignment === "right"
+                            ? "flex-end"
+                            : resolvedCellAlignment === "center"
+                                ? "center"
+                                : "flex-start";
                     content.style.color =
                         resolvedRule?.iconColor || cellStyle.iconColor;
                     const icon = this.createCellIcon(
@@ -1393,9 +1479,13 @@ export class TableRenderer {
         model.columns.forEach((column, columnIndex) => {
             const cell = document.createElement("td");
             if (column.style.allowWidthReduction) {
-                const reducedWidth = Math.max(60, column.style.reducedWidth);
+                const reducedWidth = Math.max(0, column.style.reducedWidth);
+                if (reducedWidth === 0) {
+                    cell.hidden = true;
+                }
                 cell.classList.add("is-width-reducible");
                 cell.style.width = `${reducedWidth}px`;
+                cell.style.minWidth = `${reducedWidth}px`;
                 cell.style.maxWidth = `${reducedWidth}px`;
             }
             if (!column.style.showColumnTotal) {
@@ -2052,6 +2142,12 @@ export class TableRenderer {
         value: string | number | boolean | Date | null | undefined,
         iconStyle: string
     ): HTMLElement | SVGSVGElement {
+        if (iconStyle === "none") {
+            const empty = document.createElement("span");
+            empty.className = "power-table__cell-icon is-empty";
+            empty.hidden = true;
+            return empty;
+        }
         const customId = iconStyle.startsWith("custom:")
             ? iconStyle.slice("custom:".length)
             : "";
@@ -2084,6 +2180,32 @@ export class TableRenderer {
         svg.setAttribute("viewBox", "0 0 20 20");
         svg.setAttribute("aria-hidden", "true");
         svg.classList.add("power-table__cell-icon");
+        if (iconStyle === "trendDownColor" ||
+            iconStyle === "trendFlatColor" ||
+            iconStyle === "trendUpColor") {
+            const path = document.createElementNS(namespace, "path");
+            const down = iconStyle === "trendDownColor";
+            const flat = iconStyle === "trendFlatColor";
+            path.setAttribute(
+                "d",
+                flat
+                    ? "M3 8h14v5H3Z"
+                    : down
+                        ? "M2 3h16L10 18Z"
+                        : "M10 2 18 17H2Z"
+            );
+            path.setAttribute(
+                "fill",
+                flat ? "#D6A700" : down ? "#D84A3A" : "#49A56B"
+            );
+            path.setAttribute(
+                "stroke",
+                flat ? "#9A7800" : down ? "#A92F24" : "#2F7D4C"
+            );
+            path.setAttribute("stroke-width", "1");
+            svg.appendChild(path);
+            return svg;
+        }
 
         const categoryIndex = this.hashValue(String(value ?? "")) % 4;
         const numericValue = typeof value === "number" ? value : Number(value);
@@ -2344,6 +2466,37 @@ export class TableRenderer {
             hash = ((hash << 5) - hash + value.charCodeAt(index)) | 0;
         }
         return Math.abs(hash);
+    }
+
+    private resolveCellAlignment(
+        columnAlignment: string,
+        globalAlignment: string,
+        isNumeric: boolean
+    ): "left" | "center" | "right" {
+        const normalize = (value: string): "left" | "center" | "right" | "auto" => {
+            const normalized = String(value || "auto").trim().toLowerCase();
+            if (normalized === "right" || normalized === "end" ||
+                normalized === "flex-end") {
+                return "right";
+            }
+            if (normalized === "center" || normalized === "middle") {
+                return "center";
+            }
+            if (normalized === "left" || normalized === "start" ||
+                normalized === "flex-start") {
+                return "left";
+            }
+            return "auto";
+        };
+        const column = normalize(columnAlignment);
+        if (column !== "auto") {
+            return column;
+        }
+        const global = normalize(globalAlignment);
+        if (global !== "auto") {
+            return global;
+        }
+        return isNumeric ? "right" : "left";
     }
 
     private darkenColor(color: string): string {

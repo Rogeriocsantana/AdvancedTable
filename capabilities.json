@@ -83,6 +83,7 @@
                 ,"headerBorderLeftWidth": { "type": { "numeric": true } }
                 ,"headerBorderRadius": { "type": { "numeric": true } }
                 ,"headerFontSize": { "type": { "formatting": { "fontSize": true } } }
+                ,"headerShowColumnFilters": { "type": { "bool": true } }
                 ,"headerFontFamily": { "type": { "formatting": { "fontFamily": true } } }
                 ,"headerAlignment": { "type": { "enumeration": [
                     { "displayName": "Esquerda", "value": "left" },
@@ -491,6 +492,15 @@
                 "backgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
                 "allowWidthReduction": { "type": { "bool": true } },
                 "reducedWidth": { "type": { "numeric": true } },
+                "filterVisibility": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Seguir configuração geral", "value": "inherit" },
+                            { "displayName": "Mostrar", "value": "show" },
+                            { "displayName": "Ocultar", "value": "hide" }
+                        ]
+                    }
+                },
                 "alignment": {
                     "type": {
                         "enumeration": [
@@ -581,10 +591,31 @@
                 },
                 "backgroundEnabled": { "type": { "bool": true } },
                 "backgroundColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "backgroundColorField": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Usar cor fixa", "value": "" }
+                        ]
+                    }
+                },
                 "fontEnabled": { "type": { "bool": true } },
                 "fontColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "fontColorField": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Usar cor fixa", "value": "" }
+                        ]
+                    }
+                },
                 "iconsEnabled": { "type": { "bool": true } },
                 "iconColor": { "type": { "fill": { "solid": { "color": true } } } },
+                "iconColorField": {
+                    "type": {
+                        "enumeration": [
+                            { "displayName": "Usar cor fixa", "value": "" }
+                        ]
+                    }
+                },
                 "iconStyle": {
                     "type": {
                         "enumeration": [

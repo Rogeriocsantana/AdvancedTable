@@ -67,6 +67,7 @@ export interface ColumnRuleSet {
     barMinimum: number;
     barMaximum: number;
     iconSize?: "small" | "medium" | "large";
+    iconPosition?: IconPosition;
     labelMarker?: LabelMarker;
     barStyle?: BarStyle;
     barPosition?: BarPosition;

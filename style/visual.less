@@ -165,7 +165,7 @@
 
     &__rule-config-bar {
         position: absolute;
-        z-index: 80;
+        z-index: 20000;
         top: 3px;
         left: 10px;
         display: flex;
@@ -551,14 +551,10 @@
 
     &__table {
         width: 100%;
-        min-width: max-content;
+        min-width: 100%;
         border-collapse: separate;
         border-spacing: 0;
         table-layout: auto;
-
-        &.has-width-reducible-columns {
-            min-width: 100%;
-        }
     }
 
     th {
@@ -609,6 +605,7 @@
     }
 
     &__sort {
+        position: relative;
         min-width: 0;
         flex: 1 1 auto;
         height: 100%;
@@ -619,7 +616,7 @@
         font: inherit;
         font-weight: 600;
         text-align: var(--power-table-header-alignment);
-        cursor: pointer;
+        cursor: default;
     }
 
     &__header-cell.is-width-reducible {
@@ -663,14 +660,38 @@
         }
     }
 
+    &__column-resizer {
+        position: absolute;
+        z-index: 4;
+        top: 3px;
+        right: 0;
+        bottom: 3px;
+        width: 8px;
+        cursor: col-resize;
+        touch-action: none;
+
+        &::after {
+            position: absolute;
+            top: 15%;
+            right: 0;
+            width: 1px;
+            height: 70%;
+            background: transparent;
+            content: "";
+        }
+
+        &:hover::after {
+            background: #118dff;
+        }
+    }
+
     &__filter-menu {
         position: absolute;
-        z-index: 30;
-        top: calc(100% + 2px);
-        right: 0;
+        z-index: 300;
         display: flex;
         width: 220px;
         padding: 8px;
+        overflow: hidden;
         flex-direction: column;
         gap: 5px;
         color: #242424;
@@ -711,7 +732,9 @@
 
     &__filter-list {
         display: flex;
+        min-height: 0;
         max-height: 150px;
+        flex: 1 1 auto;
         overflow: auto;
         flex-direction: column;
         gap: 4px;
@@ -757,8 +780,7 @@
     }
 
     &__sort-indicator {
-        margin-left: 6px;
-        font-size: 9px;
+        display: none;
     }
 
     td {
@@ -766,7 +788,8 @@
         max-width: 420px;
         padding: 0 12px;
         overflow: hidden;
-        border-bottom: 1px solid #ededed;
+        border-bottom: var(--power-table-row-divider-width, 1px) solid
+            var(--power-table-row-divider-color, #ededed);
         text-overflow: ellipsis;
         white-space: nowrap;
         text-align: var(--power-table-value-alignment);
@@ -831,6 +854,7 @@
         align-items: center;
         justify-content: inherit;
         gap: 6px;
+        box-sizing: border-box;
         max-width: 100%;
     }
 

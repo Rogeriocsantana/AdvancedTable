@@ -386,7 +386,7 @@ class SearchCardSettings extends FormattingSettingsCompositeCard {
     placeholder = new formattingSettings.TextInput({
         name: "placeholder",
         displayName: "Texto da pesquisa",
-        value: "Pacientes",
+        value: "Pesquisar...",
         placeholder: "Pesquisar..."
     });
 
@@ -780,6 +780,12 @@ class DownloadCardSettings extends FormattingSettingsCompositeCard {
 }
 
 class HeaderCardSettings extends FormattingSettingsCompositeCard {
+    showColumnFilters = new formattingSettings.ToggleSwitch({
+        name: "showColumnFilters",
+        displayName: "Mostrar filtros nas colunas",
+        value: true
+    });
+
     backgroundColor = new formattingSettings.ColorPicker({
         name: "backgroundColor",
         displayName: "Cor de fundo",
@@ -879,6 +885,7 @@ class HeaderCardSettings extends FormattingSettingsCompositeCard {
             displayName: "Texto",
             collapsible: true,
             slices: [
+                this.showColumnFilters,
                 this.textColor,
                 this.fontSize,
                 this.fontFamily,
@@ -1580,15 +1587,22 @@ class ColumnStyleCardSettings extends FormattingSettingsCompositeCard {
 
     allowWidthReduction = new formattingSettings.ToggleSwitch({
         name: "allowWidthReduction",
-        displayName: "Permitir reduzir largura",
-        description: "Permite cortar o texto desta coluna com reticências para ajudar a evitar a barra horizontal.",
+        displayName: "Usar largura mínima",
+        description: "Também é ativada automaticamente ao arrastar a divisória da coluna.",
         value: false
+    });
+
+    filterVisibility = new formattingSettings.AutoDropdown({
+        name: "filterVisibility",
+        displayName: "Filtro no cabeçalho desta coluna",
+        description: "Permite retirar ou mostrar o ícone de filtro especificamente nesta coluna.",
+        value: "inherit"
     });
 
     reducedWidth = new formattingSettings.NumUpDown({
         name: "reducedWidth",
-        displayName: "Largura máxima reduzida",
-        description: "Largura máxima, em pixels, quando a redução estiver habilitada.",
+        displayName: "Largura mínima (0 oculta)",
+        description: "Use zero para ocultar a coluna. Duplo clique na divisória restaura o modo automático.",
         value: 140
     });
 
@@ -1842,6 +1856,7 @@ class ColumnStyleCardSettings extends FormattingSettingsCompositeCard {
                 this.textColor,
                 this.backgroundColor,
                 this.alignment,
+                this.filterVisibility,
                 this.allowWidthReduction,
                 this.reducedWidth,
                 this.cellPadding
@@ -1900,6 +1915,7 @@ class ColumnStyleCardSettings extends FormattingSettingsCompositeCard {
             displayName: "Título da coluna",
             collapsible: true,
             slices: [
+                this.filterVisibility,
                 this.headerPadding,
                 this.headerFontSize,
                 this.headerTextColor,
@@ -1961,6 +1977,13 @@ class CellElementsCardSettings extends FormattingSettingsCompositeCard {
         value: { value: "#FFFFFF" }
     });
 
+    backgroundColorField = new formattingSettings.ItemDropdown({
+        name: "backgroundColorField",
+        displayName: "Campo/medida da cor de fundo",
+        items: [],
+        value: { displayName: "Usar cor fixa", value: "" }
+    });
+
     fontEnabled = new formattingSettings.ToggleSwitch({
         name: "fontEnabled",
         displayName: "Cor da fonte",
@@ -1973,6 +1996,13 @@ class CellElementsCardSettings extends FormattingSettingsCompositeCard {
         value: { value: "#242424" }
     });
 
+    fontColorField = new formattingSettings.ItemDropdown({
+        name: "fontColorField",
+        displayName: "Campo/medida da cor da fonte",
+        items: [],
+        value: { displayName: "Usar cor fixa", value: "" }
+    });
+
     iconsEnabled = new formattingSettings.ToggleSwitch({
         name: "iconsEnabled",
         displayName: "Ícones",
@@ -1983,6 +2013,13 @@ class CellElementsCardSettings extends FormattingSettingsCompositeCard {
         name: "iconColor",
         displayName: "Formatação da cor do ícone",
         value: { value: "#118DFF" }
+    });
+
+    iconColorField = new formattingSettings.ItemDropdown({
+        name: "iconColorField",
+        displayName: "Campo/medida da cor do ícone",
+        items: [],
+        value: { displayName: "Usar cor fixa", value: "" }
     });
 
     iconStyle = new formattingSettings.AutoDropdown({
@@ -2044,22 +2081,18 @@ class CellElementsCardSettings extends FormattingSettingsCompositeCard {
     displayName = "Elementos da célula";
     groups = [
         new FormattingSettingsGroup({
-            name: "cellElementsTarget",
-            displayName: "Série",
+            name: "cellElementsAppearance",
+            displayName: "Elementos da célula",
             collapsible: true,
-            slices: [this.selectedSeries]
-        }),
-        new FormattingSettingsGroup({
-            name: "cellElementsBackground",
-            displayName: "Cor da tela de fundo",
-            collapsible: true,
-            slices: [this.backgroundEnabled, this.backgroundColor]
-        }),
-        new FormattingSettingsGroup({
-            name: "cellElementsFont",
-            displayName: "Cor da fonte",
-            collapsible: true,
-            slices: [this.fontEnabled, this.fontColor]
+            slices: [
+                this.selectedSeries,
+                this.backgroundEnabled,
+                this.backgroundColor,
+                this.backgroundColorField,
+                this.fontEnabled,
+                this.fontColor,
+                this.fontColorField
+            ]
         }),
         new FormattingSettingsGroup({
             name: "cellElementsIcons",
@@ -2068,6 +2101,7 @@ class CellElementsCardSettings extends FormattingSettingsCompositeCard {
             slices: [
                 this.iconsEnabled,
                 this.iconColor,
+                this.iconColorField,
                 this.iconStyle,
                 this.iconLayout,
                 this.iconRuleEnabled,
@@ -2083,8 +2117,11 @@ class CellElementsCardSettings extends FormattingSettingsCompositeCard {
 
     onPreProcess(): void {
         this.backgroundColor.visible = this.backgroundEnabled.value;
+        this.backgroundColorField.visible = this.backgroundEnabled.value;
         this.fontColor.visible = this.fontEnabled.value;
+        this.fontColorField.visible = this.fontEnabled.value;
         this.iconColor.visible = this.iconsEnabled.value;
+        this.iconColorField.visible = this.iconsEnabled.value;
         this.iconStyle.visible = this.iconsEnabled.value;
         this.iconLayout.visible = this.iconsEnabled.value;
         const showRule = this.iconsEnabled.value && this.iconRuleEnabled.value;

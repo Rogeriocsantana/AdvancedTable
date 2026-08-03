@@ -10,11 +10,15 @@ import {
 } from "./ruleTypes";
 
 const ICONS: string[][] = [
+    ["none", "Sem ícone"],
     ["check", "✓ Aprovação"],
     ["close", "× Reprovação"],
     ["circleSymbolHigh", "Aprovação circular nativa"],
     ["circleSymbolLow", "Reprovação circular nativa"],
     ["flagLow", "Bandeira baixa nativa"],
+    ["trendDownColor", "Tendência baixa"],
+    ["trendFlatColor", "Tendência estável"],
+    ["trendUpColor", "Tendência alta"],
     ["warning", "⚠ Alerta"],
     ["info", "ⓘ Informação"],
     ["star", "★ Estrela"],
@@ -203,6 +207,7 @@ function createRuleSet(targetQueryName: string): ColumnRuleSet {
         barMinimum: 0,
         barMaximum: 100,
         iconSize: "medium",
+        iconPosition: "before",
         labelMarker: "circle",
         barStyle: "adjacent",
         barPosition: "before"
@@ -448,14 +453,21 @@ export class RuleEditor {
     private normalizeRuleSet(ruleSet: ColumnRuleSet): void {
         ruleSet.enabled = ruleSet.enabled !== false;
         ruleSet.iconSize = ruleSet.iconSize || "medium";
+        ruleSet.iconPosition =
+            ruleSet.iconPosition ||
+            ruleSet.defaultRule?.iconPosition ||
+            ruleSet.rules[0]?.iconPosition ||
+            "before";
         ruleSet.labelMarker = ruleSet.labelMarker || "circle";
         ruleSet.barStyle = ruleSet.barStyle || "adjacent";
         ruleSet.barPosition = ruleSet.barPosition || "before";
         if (ruleSet.mode === "value") ruleSet.mode = "pill";
         ruleSet.defaultRule ||= createRule(ruleSet.targetQueryName);
+        ruleSet.defaultRule.iconPosition = ruleSet.iconPosition;
         ruleSet.rules.forEach((rule) => {
             rule.compareValue2 ||= "";
             rule.sourceQueryName ||= ruleSet.targetQueryName;
+            rule.iconPosition = ruleSet.iconPosition || "before";
         });
     }
 
@@ -598,10 +610,11 @@ export class RuleEditor {
                         ["after", "Depois do valor"],
                         ["only", "Somente ícone"]
                     ],
-                    this.activeRuleSet.defaultRule?.iconPosition || "before",
+                    this.activeRuleSet.iconPosition || "before",
                     (value) => {
                         if (!this.activeRuleSet) return;
                         const position = value as VisualRule["iconPosition"];
+                        this.activeRuleSet.iconPosition = position;
                         this.activeRuleSet.rules.forEach(
                             (rule) => { rule.iconPosition = position; }
                         );
@@ -1769,6 +1782,13 @@ export class RuleEditor {
     }
 
     private createIconPickerGlyph(iconValue: string): Element {
+        if (iconValue === "none") {
+            const empty = document.createElement("span");
+            empty.className = "power-table__icon-picker-glyph is-empty";
+            empty.textContent = "∅";
+            empty.title = "Sem ícone";
+            return empty;
+        }
         if (iconValue.startsWith("custom:")) {
             const asset = this.customIcons.find(
                 (candidate) =>
@@ -1794,7 +1814,10 @@ export class RuleEditor {
         if (iconValue === "circleSymbolHigh" ||
             iconValue === "circleSymbolLow" ||
             iconValue === "flagLow" ||
-            iconValue === "flag") {
+            iconValue === "flag" ||
+            iconValue === "trendDownColor" ||
+            iconValue === "trendFlatColor" ||
+            iconValue === "trendUpColor") {
             return this.createNativeReferenceIcon(iconValue);
         }
         const glyph = document.createElement("span");
@@ -1832,6 +1855,32 @@ export class RuleEditor {
         svg.setAttribute("viewBox", "0 0 24 24");
         svg.setAttribute("aria-hidden", "true");
         svg.classList.add("power-table__native-icon-preview");
+        if (iconValue === "trendDownColor" ||
+            iconValue === "trendFlatColor" ||
+            iconValue === "trendUpColor") {
+            const path = document.createElementNS(namespace, "path");
+            const down = iconValue === "trendDownColor";
+            const flat = iconValue === "trendFlatColor";
+            path.setAttribute(
+                "d",
+                flat
+                    ? "M4 9h16v6H4Z"
+                    : down
+                        ? "M3 5h18L12 20Z"
+                        : "M12 4 21 19H3Z"
+            );
+            path.setAttribute(
+                "fill",
+                flat ? "#D6A700" : down ? "#D84A3A" : "#49A56B"
+            );
+            path.setAttribute(
+                "stroke",
+                flat ? "#9A7800" : down ? "#A92F24" : "#2F7D4C"
+            );
+            path.setAttribute("stroke-width", "1");
+            svg.appendChild(path);
+            return svg;
+        }
         if (iconValue === "flagLow" || iconValue === "flag") {
             const pole = document.createElementNS(namespace, "rect");
             pole.setAttribute("x", "4");
@@ -2094,17 +2143,28 @@ export class RuleEditor {
                 : style.iconSize === "large"
                     ? "32px"
                     : "22px";
-            icon.appendChild(
-                this.createIconPickerGlyph(style.icon || "check")
-            );
+            const hasIcon = style.icon !== "none";
+            if (hasIcon) {
+                icon.appendChild(
+                    this.createIconPickerGlyph(style.icon || "check")
+                );
+            }
             const label = document.createElement("b");
             label.textContent = text;
             if (style.iconPosition === "only") {
-                element.appendChild(icon);
+                if (hasIcon) {
+                    element.appendChild(icon);
+                }
             } else if (style.iconPosition === "after") {
-                element.append(label, icon);
+                element.appendChild(label);
+                if (hasIcon) {
+                    element.appendChild(icon);
+                }
             } else {
-                element.append(icon, label);
+                if (hasIcon) {
+                    element.appendChild(icon);
+                }
+                element.appendChild(label);
             }
         } else {
             element.textContent = text;
@@ -2318,7 +2378,15 @@ export class RuleEditor {
             return asset?.colorMode === "rule";
         }
         return !iconValue.startsWith("emoji") &&
-            !["circleSymbolHigh", "circleSymbolLow", "flagLow", "flag"]
+            ![
+                "circleSymbolHigh",
+                "circleSymbolLow",
+                "flagLow",
+                "flag",
+                "trendDownColor",
+                "trendFlatColor",
+                "trendUpColor"
+            ]
                 .includes(iconValue);
     }
 

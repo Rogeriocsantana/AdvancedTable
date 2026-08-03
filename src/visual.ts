@@ -79,6 +79,8 @@ export class Visual implements IVisual {
     private selectedKeys = new Set<string>();
     private searchTimer?: number;
     private searchSelectionActive = false;
+    private readonly searchValues: [string, string] = ["", ""];
+    private showColumnFilters = true;
     private readonly columnFilters = new Map<string, Set<string>>();
     private currentPage = 1;
     private ruleSets: ColumnRuleSet[] = [];
@@ -110,6 +112,8 @@ export class Visual implements IVisual {
                 this.applyColumnFilter(column, values),
             onClearColumnFilter: (queryName) =>
                 this.clearColumnFilter(queryName),
+            onColumnResize: (column, width) =>
+                this.resizeColumn(column, width),
             onClearSelection: () => this.clearSelection(),
             onPageChange: (page) => this.changePage(page),
             onDownload: (scope, format, fileName) =>
@@ -159,6 +163,13 @@ export class Visual implements IVisual {
             const searchObjects = dataView?.metadata.objects?.search;
             const columnStyleObjects = dataView?.metadata.objects?.columnStyle;
             const cellElementObjects = dataView?.metadata.objects?.cellElements;
+            const tableObjects = dataView?.metadata.objects?.table;
+            const persistedShowColumnFilters =
+                tableObjects?.headerShowColumnFilters;
+            this.showColumnFilters =
+                typeof persistedShowColumnFilters === "boolean"
+                    ? persistedShowColumnFilters
+                    : this.formattingSettings.header.showColumnFilters.value;
             this.configureSearchFields(
                 this.readObjectString(searchObjects, "field1"),
                 this.readObjectString(searchObjects, "field2")
@@ -169,7 +180,7 @@ export class Visual implements IVisual {
             this.configureCellElementSettings(
                 this.readObjectString(cellElementObjects, "selectedSeries")
             );
-            this.applySearch(this.renderer.getSearchTexts(), false);
+            this.applySearch(this.searchValues, false);
             this.events.renderingFinished(options);
         } catch (error) {
             this.events.renderingFailed(options, String(error));
@@ -181,10 +192,9 @@ export class Visual implements IVisual {
     }
 
     private applySearchInput(index: number, value: string): void {
-        const searchValues = this.renderer.getSearchTexts();
-        searchValues[index] = value;
+        this.searchValues[index] = value;
         this.currentPage = 1;
-        this.applySearch(searchValues, true, index);
+        this.applySearch(this.searchValues, true, index);
     }
 
     private applySearch(
@@ -396,6 +406,7 @@ export class Visual implements IVisual {
                     String(this.formattingSettings.header.alignment.value),
                 headerHeight: this.formattingSettings.header.height.value,
                 headerPadding: this.formattingSettings.header.horizontalPadding.value,
+                showColumnFilters: this.showColumnFilters,
                 showCheckboxes:
                     this.formattingSettings.selection.showCheckboxes.value,
                 showSelectAll:
@@ -692,7 +703,7 @@ export class Visual implements IVisual {
             schemaVersion: 1,
             visualGuid:
                 "advancedTableRogerC40D05D8D12144689810E97FF8C695C8",
-            visualVersion: "0.5.26.0",
+            visualVersion: "0.5.32.0",
             exportedAt: new Date().toISOString(),
             objects,
             columns: metadata.columns
@@ -904,6 +915,7 @@ export class Visual implements IVisual {
             settings.alignment.visible = false;
             settings.allowWidthReduction.visible = false;
             settings.reducedWidth.visible = false;
+            settings.filterVisibility.visible = false;
             settings.iconStyle.visible = false;
             settings.iconColor.visible = false;
             settings.cellPadding.visible = false;
@@ -923,7 +935,8 @@ export class Visual implements IVisual {
         settings.backgroundColor.visible = true;
         settings.alignment.visible = true;
         settings.allowWidthReduction.visible = true;
-        settings.reducedWidth.visible = column.style.allowWidthReduction;
+        settings.reducedWidth.visible = true;
+        settings.filterVisibility.visible = true;
         settings.iconStyle.visible = false;
         settings.iconColor.visible = false;
         settings.cellPadding.visible = true;
@@ -961,6 +974,7 @@ export class Visual implements IVisual {
         settings.allowWidthReduction.value =
             column.style.allowWidthReduction;
         settings.reducedWidth.value = column.style.reducedWidth;
+        settings.filterVisibility.value = column.style.filterVisibility;
         settings.iconStyle.value = column.style.iconStyle;
         settings.iconColor.value = { value: column.style.iconColor };
         settings.cellPadding.value = column.style.cellPadding;
@@ -1025,8 +1039,7 @@ export class Visual implements IVisual {
         const wildcardSelector: powerbi.data.Selector = {
             ...dataViewWildcard.createDataViewWildcardSelector(
                 dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals
-            ),
-            metadata: queryName
+            )
         };
         [
             settings.cellMode,
@@ -1038,6 +1051,7 @@ export class Visual implements IVisual {
             settings.alignment,
             settings.allowWidthReduction,
             settings.reducedWidth,
+            settings.filterVisibility,
             settings.iconStyle,
             settings.cellPadding,
             settings.headerPadding,
@@ -1079,22 +1093,15 @@ export class Visual implements IVisual {
         [
             settings.iconColor,
             settings.headerTextColor,
-            settings.headerBackgroundColor
+            settings.headerBackgroundColor,
+            settings.textColor,
+            settings.backgroundColor,
+            settings.pillFunctionColor
         ].forEach((slice) => {
             slice.selector = wildcardSelector;
             slice.altConstantSelector = constantSelector;
             slice.instanceKind =
                 powerbi.VisualEnumerationInstanceKinds.ConstantOrRule;
-        });
-        [
-            settings.textColor,
-            settings.backgroundColor,
-            settings.pillFunctionColor
-        ].forEach((slice) => {
-            slice.selector = constantSelector;
-            slice.altConstantSelector = undefined;
-            slice.instanceKind =
-                powerbi.VisualEnumerationInstanceKinds.Constant;
         });
     }
 
@@ -1106,8 +1113,28 @@ export class Visual implements IVisual {
                 value: column.queryName || ""
             }));
         const settings = this.formattingSettings.cellElements;
+        const colorFieldItems: powerbi.IEnumMember[] = [{
+            displayName: "Usar cor fixa",
+            value: ""
+        }];
+        const seenColorFields = new Set<string>();
+        [...(this.model?.columns || []), ...(this.model?.ruleColumns || [])]
+            .forEach((field) => {
+                const value = field.queryName || "";
+                if (!value || seenColorFields.has(value)) {
+                    return;
+                }
+                seenColorFields.add(value);
+                colorFieldItems.push({
+                    displayName: field.displayName,
+                    value
+                });
+            });
         settings.selectedSeries.items = items;
         settings.iconRuleField.items = items;
+        settings.backgroundColorField.items = colorFieldItems;
+        settings.fontColorField.items = colorFieldItems;
+        settings.iconColorField.items = colorFieldItems;
         settings.selectedSeries.value = this.resolveSearchField(
             savedColumn || settings.selectedSeries.value,
             items,
@@ -1124,10 +1151,13 @@ export class Visual implements IVisual {
         const configurable = [
             settings.backgroundEnabled,
             settings.backgroundColor,
+            settings.backgroundColorField,
             settings.fontEnabled,
             settings.fontColor,
+            settings.fontColorField,
             settings.iconsEnabled,
             settings.iconColor,
+            settings.iconColorField,
             settings.iconStyle,
             settings.iconLayout,
             settings.iconRuleEnabled,
@@ -1158,12 +1188,27 @@ export class Visual implements IVisual {
         settings.backgroundColor.value = {
             value: this.readObjectColor(object, "backgroundColor", "#FFFFFF")
         };
+        settings.backgroundColorField.value = this.resolveSearchField(
+            this.readObjectString(object, "backgroundColorField") || "",
+            colorFieldItems,
+            0
+        );
         settings.fontColor.value = {
             value: this.readObjectColor(object, "fontColor", "#242424")
         };
+        settings.fontColorField.value = this.resolveSearchField(
+            this.readObjectString(object, "fontColorField") || "",
+            colorFieldItems,
+            0
+        );
         settings.iconColor.value = {
             value: this.readObjectColor(object, "iconColor", "#118DFF")
         };
+        settings.iconColorField.value = this.resolveSearchField(
+            this.readObjectString(object, "iconColorField") || "",
+            colorFieldItems,
+            0
+        );
         settings.iconStyle.value =
             this.readObjectString(object, "iconStyle") || "status";
         settings.iconLayout.value =
@@ -1191,16 +1236,13 @@ export class Visual implements IVisual {
         };
 
         const constantSelector: powerbi.data.Selector = { metadata: queryName };
-        const wildcardSelector: powerbi.data.Selector = {
-            ...dataViewWildcard.createDataViewWildcardSelector(
-                dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals
-            ),
-            metadata: queryName
-        };
         [
             settings.backgroundEnabled,
+            settings.backgroundColorField,
             settings.fontEnabled,
+            settings.fontColorField,
             settings.iconsEnabled,
+            settings.iconColorField,
             settings.iconStyle,
             settings.iconLayout,
             settings.iconRuleEnabled,
@@ -1218,10 +1260,10 @@ export class Visual implements IVisual {
             settings.fontColor,
             settings.iconColor
         ].forEach((slice) => {
-            slice.selector = wildcardSelector;
-            slice.altConstantSelector = constantSelector;
+            slice.selector = constantSelector;
+            slice.altConstantSelector = undefined;
             slice.instanceKind =
-                powerbi.VisualEnumerationInstanceKinds.ConstantOrRule;
+                powerbi.VisualEnumerationInstanceKinds.Constant;
         });
     }
 
@@ -1346,11 +1388,7 @@ export class Visual implements IVisual {
             );
             return;
         }
-        const columnIndex = this.model?.columns.findIndex((column) =>
-            Boolean(column.filterTarget) && !column.isNumeric
-        ) ?? -1;
-        const column = columnIndex >= 0 ? this.model?.columns[columnIndex] : undefined;
-        if (!column?.filterTarget || this.selectedKeys.size === 0) {
+        if (!this.model || this.selectedKeys.size === 0) {
             this.host.applyJsonFilter(
                 null as unknown as powerbi.IFilter,
                 "general",
@@ -1359,21 +1397,44 @@ export class Visual implements IVisual {
             );
             return;
         }
-        const values = (this.model?.rows || [])
-            .filter((row) => this.selectedKeys.has(row.selectionId.getKey()))
-            .map((row) => row.values[columnIndex])
-            .filter((value): value is string | number | boolean =>
-                typeof value === "string" ||
-                typeof value === "number" ||
-                typeof value === "boolean"
-            );
-        const filter = new BasicFilter(
-            column.filterTarget,
-            "In",
-            Array.from(new Set(values))
+        const selectedRows = this.model.rows.filter((row) =>
+            this.selectedKeys.has(row.selectionId.getKey())
         );
+        if (selectedRows.length === 0) {
+            this.host.applyJsonFilter(
+                null as unknown as powerbi.IFilter,
+                "general",
+                "filter",
+                powerbi.FilterAction.merge
+            );
+            return;
+        }
+
+        const filters: powerbi.IFilter[] = [];
+        this.model.columns.forEach((column, columnIndex) => {
+            if (!column.filterTarget) {
+                return;
+            }
+            const values = selectedRows
+                .map((row) => row.values[columnIndex])
+                .filter((value): value is string | number | boolean =>
+                    typeof value === "string" ||
+                    typeof value === "number" ||
+                    typeof value === "boolean"
+                );
+            const uniqueValues = Array.from(new Set(values));
+            if (uniqueValues.length > 0) {
+                const filter = new BasicFilter(
+                    column.filterTarget,
+                    "In",
+                    uniqueValues
+                );
+                filters.push(filter.toJSON() as powerbi.IFilter);
+            }
+        });
+
         this.host.applyJsonFilter(
-            filter.toJSON() as powerbi.IFilter,
+            filters.length > 0 ? (filters as unknown as powerbi.IFilter) : (null as unknown as powerbi.IFilter),
             "general",
             "filter",
             powerbi.FilterAction.merge
@@ -1484,13 +1545,36 @@ export class Visual implements IVisual {
             this.columnFilters.set(column.queryName, new Set(values));
         }
         this.currentPage = 1;
-        this.applySearch(this.renderer.getSearchTexts(), false);
+        this.applySearch(this.searchValues, false);
     }
 
     private clearColumnFilter(queryName: string): void {
         this.columnFilters.delete(queryName);
         this.currentPage = 1;
-        this.applySearch(this.renderer.getSearchTexts(), false);
+        this.applySearch(this.searchValues, false);
+    }
+
+    private resizeColumn(column: TableColumn, width: number): void {
+        if (!column.queryName) {
+            return;
+        }
+        const useFixedWidth = width >= 0;
+        column.style.allowWidthReduction = useFixedWidth;
+        column.style.reducedWidth = useFixedWidth
+            ? Math.max(0, Math.round(width))
+            : 140;
+        this.configureColumnSettings(column.queryName);
+        this.render();
+        this.host.persistProperties({
+            merge: [{
+                objectName: "columnStyle",
+                selector: { metadata: column.queryName },
+                properties: {
+                    allowWidthReduction: useFixedWidth,
+                    reducedWidth: column.style.reducedWidth
+                }
+            }]
+        });
     }
 
     private changePage(page: number): void {

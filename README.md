@@ -4,7 +4,7 @@ Visual de tabela avançada para Power BI, criado para oferecer mais controle sob
 
 O nome exibido no Power BI é **AdvanceTable**. Os pacotes distribuídos utilizam o nome **AdvancedTable**.
 
-> Versão atual: `0.5.26`  
+> Versão atual: `0.5.32`  
 > API de visuais do Power BI: `5.11`
 
 ## Recursos
@@ -29,6 +29,7 @@ O nome exibido no Power BI é **AdvanceTable**. Os pacotes distribuídos utiliza
 - escolha dos campos utilizados em cada pesquisa;
 - pesquisa apenas no visual ou aplicada como filtro no relatório;
 - filtros individuais nos cabeçalhos;
+- controle geral dos filtros e substituição por coluna para mostrar ou ocultar;
 - pesquisa e seleção de valores dentro do filtro;
 - limpeza individual dos filtros;
 - barra opcional mostrando os filtros ativos.
@@ -48,6 +49,9 @@ O nome exibido no Power BI é **AdvanceTable**. Os pacotes distribuídos utiliza
 - cores globais de texto e fundo;
 - exibição, cor e espessura configuráveis das linhas divisórias;
 - formatação específica por coluna, com prioridade sobre a configuração global;
+- redimensionamento direto das colunas arrastando a divisória do cabeçalho;
+- duplo clique na divisória para restaurar a largura automática;
+- largura mínima responsiva por coluna e ocultação ao arrastar até zero;
 - redução opcional de largura por coluna, com texto completo no tooltip;
 - personalização de cabeçalhos, bordas, títulos e subtítulos;
 - contador de registros;
@@ -64,6 +68,7 @@ O editor próprio de formatação condicional é aberto pelo botão de função 
 - operadores de igualdade, diferença, maior, menor, intervalos, números e percentuais;
 - regras baseadas na própria coluna ou em outro campo;
 - campos e medidas auxiliares usados somente nas regras;
+- cores de fundo, fonte e ícone baseadas em campos ou medidas auxiliares;
 - preview em tempo real e simulador de valores;
 - opção para remover ou restaurar a formatação de uma coluna.
 
@@ -98,12 +103,15 @@ O editor próprio de formatação condicional é aberto pelo botão de função 
 
 - biblioteca de ícones nativos;
 - ícone antes, depois ou no lugar do texto;
+- resultado padrão sem ícone para regras que devem deixar a célula vazia;
 - tamanhos pequeno, médio e grande;
 - cor fixa ou dinâmica, quando o ícone permitir;
 - busca, visualização compacta ou expandida e reordenação;
 - ocultação e restauração de ícones nativos;
 - importação de ícones personalizados em PNG e SVG;
 - gerenciamento da biblioteca, lixeira e proteção de ícones em uso.
+- conjunto nativo de tendência com triângulo de baixa, traço estável e
+  triângulo de alta.
 
 ### Totais e agregações
 

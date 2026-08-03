@@ -18,6 +18,7 @@ export interface ColumnStyle {
     backgroundColor: string;
     allowWidthReduction: boolean;
     reducedWidth: number;
+    filterVisibility: string;
     customTextColor: boolean;
     customBackgroundColor: boolean;
     hasRowTextColor: boolean;

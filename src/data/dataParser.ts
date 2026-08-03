@@ -13,23 +13,84 @@ function objectString(
     return typeof value === "string" ? value : fallback;
 }
 
+function parseColorValue(value: unknown, fallback: string): string {
+    if (typeof value === "string") {
+        const trimmed = value.trim();
+        if (trimmed && trimmed !== "transparent") {
+            return trimmed;
+        }
+        return fallback;
+    }
+    if (value && typeof value === "object") {
+        const obj = value as Record<string, unknown>;
+        const solidColor = (obj.solid as { color?: string } | undefined)?.color;
+        if (typeof solidColor === "string" && solidColor.trim()) {
+            return solidColor.trim();
+        }
+        const fillSolidColor = ((obj.fill as { solid?: { color?: string } } | undefined)?.solid)?.color;
+        if (typeof fillSolidColor === "string" && fillSolidColor.trim()) {
+            return fillSolidColor.trim();
+        }
+        if (typeof obj.color === "string" && obj.color.trim()) {
+            return obj.color.trim();
+        }
+        if (typeof obj.value === "string" && obj.value.trim()) {
+            return obj.value.trim();
+        }
+        for (const key of Object.keys(obj)) {
+            const child = obj[key];
+            if (typeof child === "string") {
+                const c = child.trim();
+                if (c.startsWith("#") || c.startsWith("rgb") || c.startsWith("hsl")) {
+                    return c;
+                }
+            } else if (child && typeof child === "object") {
+                const found = parseColorValue(child, "");
+                if (found && found !== "transparent") {
+                    return found;
+                }
+            }
+        }
+    }
+    return fallback;
+}
+
 function objectColor(
     object: powerbi.DataViewObject | undefined,
     property: string,
     fallback: string
 ): string {
-    const value = object?.[property] as
-        | string
-        | {
-            solid?: { color?: string };
-            color?: string;
-            value?: string;
+    if (!object) return fallback;
+    return parseColorValue(object[property], fallback);
+}
+
+function extractColor(
+    object: powerbi.DataViewObject | undefined,
+    properties: string[],
+    fallback: string
+): string {
+    if (!object) return fallback;
+    for (const prop of properties) {
+        if (hasObjectProperty(object, prop)) {
+            const color = parseColorValue(object[prop], "");
+            if (color && color !== "transparent") return color;
         }
-        | undefined;
-    if (typeof value === "string") {
-        return value;
     }
-    return value?.solid?.color || value?.color || value?.value || fallback;
+    return fallback;
+}
+
+function hasColorProperty(
+    object: powerbi.DataViewObject | undefined,
+    properties: string[]
+): boolean {
+    if (!object) return false;
+    for (const prop of properties) {
+        if (hasObjectProperty(object, prop)) {
+            const color = parseColorValue(object[prop], "");
+            if (color && color !== "transparent") return true;
+        }
+    }
+    return false;
 }
 
 function objectBoolean(
@@ -57,14 +118,14 @@ function parseColumnStyle(
 ): ColumnStyle {
     return {
         cellMode: objectString(object, "cellMode", fallback?.cellMode || "value"),
-        textColor: objectColor(
+        textColor: extractColor(
             object,
-            "textColor",
+            ["textColor", "fontColor", "color"],
             fallback?.textColor || "#242424"
         ),
-        backgroundColor: objectColor(
+        backgroundColor: extractColor(
             object,
-            "backgroundColor",
+            ["backgroundColor", "fill", "backColor"],
             fallback?.backgroundColor || "rgba(0,0,0,0)"
         ),
         allowWidthReduction: objectBoolean(
@@ -73,15 +134,20 @@ function parseColumnStyle(
             fallback?.allowWidthReduction ?? false
         ),
         reducedWidth: Math.max(
-            60,
+            0,
             Number(object?.reducedWidth ?? fallback?.reducedWidth ?? 140)
         ),
+        filterVisibility: objectString(
+            object,
+            "filterVisibility",
+            fallback?.filterVisibility || "inherit"
+        ),
         customTextColor:
-            hasObjectProperty(object, "textColor") ||
+            hasColorProperty(object, ["textColor", "fontColor", "color"]) ||
             fallback?.customTextColor ||
             false,
         customBackgroundColor:
-            hasObjectProperty(object, "backgroundColor") ||
+            hasColorProperty(object, ["backgroundColor", "fill", "backColor"]) ||
             fallback?.customBackgroundColor ||
             false,
         hasRowTextColor: fallback?.hasRowTextColor ?? false,
@@ -458,42 +524,143 @@ export function parseTable(
         const searchTexts = formattedValues.map((value) =>
             value.toLocaleLowerCase(locale)
         );
+        const colorFromField = (
+            queryName: string,
+            fallback: string
+        ): string => {
+            if (!queryName) {
+                return fallback;
+            }
+            const visibleIndex = columns.findIndex(
+                (candidate) => candidate.queryName === queryName
+            );
+            const ruleIndex = ruleColumns.findIndex(
+                (candidate) => candidate.queryName === queryName
+            );
+            const raw = visibleIndex >= 0
+                ? values[visibleIndex]
+                : ruleIndex >= 0
+                    ? ruleValues[ruleIndex]
+                    : undefined;
+            const color = typeof raw === "string" ? raw.trim() : "";
+            return color || fallback;
+        };
         const cellStyles = columns.map((column) => {
-            const cellObjects = sourceValues.objects?.[column.sourceIndex];
-            const rowObject =
-                cellObjects?.columnStyle ||
-                (cellObjects as unknown as powerbi.DataViewObject | undefined);
+            const rawCellObjects = sourceValues.objects?.[column.sourceIndex];
+            const columnStyleObj = rawCellObjects?.columnStyle as
+                | powerbi.DataViewObject
+                | undefined;
+            const cellElementsObj = rawCellObjects?.cellElements as
+                | powerbi.DataViewObject
+                | undefined;
+            const directObj = rawCellObjects as
+                | powerbi.DataViewObject
+                | undefined;
+
+            const rowObject = columnStyleObj || directObj;
             const style = parseColumnStyle(rowObject, column.style);
-            style.hasRowTextColor = hasObjectProperty(rowObject, "textColor");
-            style.hasRowBackgroundColor =
-                hasObjectProperty(rowObject, "backgroundColor");
-            style.hasRowPillFunctionColor =
-                hasObjectProperty(rowObject, "pillFunctionColor");
+
+            const rowTextColor =
+                extractColor(columnStyleObj, ["textColor", "fontColor", "color"], "") ||
+                extractColor(cellElementsObj, ["fontColor", "textColor", "color"], "") ||
+                extractColor(directObj, ["textColor", "fontColor", "color"], "");
+
+            if (rowTextColor) {
+                style.textColor = rowTextColor;
+                style.customTextColor = true;
+                style.hasRowTextColor = true;
+            } else {
+                style.hasRowTextColor =
+                    hasColorProperty(columnStyleObj, ["textColor", "fontColor", "color"]) ||
+                    hasColorProperty(directObj, ["textColor", "fontColor", "color"]);
+            }
+
+            const rowBgColor =
+                extractColor(columnStyleObj, ["backgroundColor", "fill", "backColor"], "") ||
+                extractColor(cellElementsObj, ["backgroundColor", "fill", "backColor"], "") ||
+                extractColor(directObj, ["backgroundColor", "fill", "backColor"], "");
+
+            if (rowBgColor) {
+                style.backgroundColor = rowBgColor;
+                style.customBackgroundColor = true;
+                style.hasRowBackgroundColor = true;
+            } else {
+                style.hasRowBackgroundColor =
+                    hasColorProperty(columnStyleObj, ["backgroundColor", "fill", "backColor"]) ||
+                    hasColorProperty(directObj, ["backgroundColor", "fill", "backColor"]);
+            }
+
+            const rowPillFuncColor =
+                extractColor(columnStyleObj, ["pillFunctionColor"], "") ||
+                extractColor(directObj, ["pillFunctionColor"], "");
+            if (rowPillFuncColor) {
+                style.pillFunctionColor = rowPillFuncColor;
+                style.hasRowPillFunctionColor = true;
+            } else {
+                style.hasRowPillFunctionColor =
+                    hasObjectProperty(rowObject, "pillFunctionColor");
+            }
+
             const elementBase = table.columns[column.sourceIndex]
                 .objects?.cellElements;
-            const elementRow = sourceValues.objects?.[column.sourceIndex]
-                ?.cellElements;
-            if (objectBoolean(elementBase, "backgroundEnabled")) {
-                style.backgroundColor = objectColor(
+            const elementRow = cellElementsObj || directObj;
+
+            const backgroundEnabled =
+                objectBoolean(elementBase, "backgroundEnabled") ||
+                Boolean(rowBgColor) ||
+                hasColorProperty(elementRow, ["backgroundColor", "fill", "backColor"]);
+
+            const fontEnabled =
+                objectBoolean(elementBase, "fontEnabled") ||
+                Boolean(rowTextColor) ||
+                hasColorProperty(elementRow, ["fontColor", "textColor", "color"]);
+
+            const iconsEnabled =
+                objectBoolean(elementBase, "iconsEnabled") ||
+                hasObjectProperty(elementRow, "iconColor");
+
+            if (backgroundEnabled) {
+                const bg = extractColor(
                     elementRow,
-                    "backgroundColor",
-                    objectColor(elementBase, "backgroundColor", style.backgroundColor)
+                    ["backgroundColor", "fill", "backColor"],
+                    extractColor(elementBase, ["backgroundColor"], style.backgroundColor)
                 );
-                style.customBackgroundColor = true;
+                if (bg) {
+                    style.backgroundColor = bg;
+                    style.customBackgroundColor = true;
+                    style.hasRowBackgroundColor = true;
+                }
+                style.backgroundColor = colorFromField(
+                    objectString(elementBase, "backgroundColorField", ""),
+                    style.backgroundColor
+                );
             }
-            if (objectBoolean(elementBase, "fontEnabled")) {
-                style.textColor = objectColor(
+
+            if (fontEnabled) {
+                const font = extractColor(
                     elementRow,
-                    "fontColor",
-                    objectColor(elementBase, "fontColor", style.textColor)
+                    ["fontColor", "textColor", "color"],
+                    extractColor(elementBase, ["fontColor", "textColor"], style.textColor)
                 );
-                style.customTextColor = true;
+                if (font) {
+                    style.textColor = font;
+                    style.customTextColor = true;
+                    style.hasRowTextColor = true;
+                }
+                style.textColor = colorFromField(
+                    objectString(elementBase, "fontColorField", ""),
+                    style.textColor
+                );
             }
-            if (objectBoolean(elementBase, "iconsEnabled")) {
+            if (iconsEnabled) {
                 style.iconColor = objectColor(
                     elementRow,
                     "iconColor",
                     objectColor(elementBase, "iconColor", style.iconColor)
+                );
+                style.iconColor = colorFromField(
+                    objectString(elementBase, "iconColorField", ""),
+                    style.iconColor
                 );
                 style.iconStyle = objectString(
                     elementBase,
